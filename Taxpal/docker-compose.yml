@@ -1,0 +1,63 @@
+services:
+
+  taxpal-bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: taxpal-bot
+
+    ports:
+      - "3978:3978"
+
+    environment:
+      PORT: "3978"
+      LANGFLOW_BASE_URL: "http://langflow:7860"
+      LANGFLOW_FLOW_ID: ""
+      LANGFLOW_API_KEY: ""
+
+    depends_on:
+      - langflow
+      - qdrant
+
+    restart: unless-stopped
+
+
+  langflow:
+    image: langflowai/langflow:latest
+
+    container_name: taxpal-langflow
+
+    ports:
+      - "7860:7860"
+
+    environment:
+      LANGFLOW_AUTO_LOGIN: "true"
+
+    volumes:
+      - langflow-data:/app/langflow
+
+    depends_on:
+      - qdrant
+
+    restart: unless-stopped
+
+
+  qdrant:
+    image: qdrant/qdrant:latest
+
+    container_name: taxpal-qdrant
+
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+
+    volumes:
+      - qdrant-data:/qdrant/storage
+
+    restart: unless-stopped
+
+
+volumes:
+  langflow-data:
+  qdrant-data:

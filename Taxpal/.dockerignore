@@ -1,0 +1,16 @@
+.venv
+**/.venv
+venv
+**/venv
+__pycache__
+**/__pycache__
+*.pyc
+
+.git
+.vscode
+
+env/.env.local
+env/.env.dev
+env/.env.playground
+
+*.log
