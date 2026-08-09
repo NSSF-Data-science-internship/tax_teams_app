@@ -21,7 +21,7 @@ from pathlib import Path
 from urllib.parse import urljoin
 
 # ── Config ────────────────────────────────────────────────
-HEADERS = {"User-Agent": "ClauseBot/1.0 (Educational tax law research)"}
+HEADERS = {"User-Agent": "TaxPalBot/1.0 (Educational tax law research)"}
 DELAY = 2  # seconds between requests — be respectful to servers
 BASE_DIR = Path(__file__).parent.parent / "data" / "raw"
 

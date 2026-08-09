@@ -68,7 +68,7 @@ def run_full_pipeline():
     start = time.time()
 
     print("\n" + "═" * 60)
-    print("  CLAUSE BOT — INGESTION PIPELINE")
+    print("  TAXPAL — INGESTION PIPELINE")
     print("  Scrape → Parse → Embed → Store")
     print("═" * 60 + "\n")
 

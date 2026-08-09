@@ -11,7 +11,7 @@ def build_citation_card(
     body = [
         {
             "type": "TextBlock",
-            "text": "Clause — Uganda Tax Assistant",
+            "text": "TaxPal — Uganda Tax Assistant",
             "weight": "Bolder",
             "size": "Medium",
             "wrap": True
@@ -49,7 +49,7 @@ def build_citation_card(
     body.append({
         "type": "TextBlock",
         "text": (
-            "Clause provides tax information for informational "
+            "TaxPal provides tax information for informational "
             "purposes only. It does not constitute legal, tax, "
             "or financial advice."
         ),
