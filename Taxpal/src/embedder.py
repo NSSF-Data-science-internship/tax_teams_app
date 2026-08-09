@@ -33,7 +33,6 @@ REQUIREMENTS:
     pip install FlagEmbedding qdrant-client torch
 """
 
-import os
 import json
 from pathlib import Path
 from qdrant_client import QdrantClient
@@ -42,9 +41,11 @@ from qdrant_client.models import (
     PointStruct, SparseVector, NamedVector, NamedSparseVector,
 )
 
+from config import Config
+
 # ── Config ────────────────────────────────────────────────
-QDRANT_URL = os.getenv("QDRANT_URL", "http://localhost:6333")
-COLLECTION = os.getenv("QDRANT_COLLECTION", "tax_law_ug")
+QDRANT_URL = Config.QDRANT_URL
+COLLECTION = Config.QDRANT_COLLECTION
 BATCH_SIZE = 32  # how many chunks to embed + upload at once
 
 

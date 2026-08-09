@@ -175,6 +175,34 @@ async def handle_message(
                 )
             )
         )
+        @app.on_message
+async def handle_message(ctx: ActivityContext[MessageActivity]):
+    question = (ctx.activity.text or "").strip()
+
+    if not question:
+        await ctx.send(MessageActivityInput(text="Please enter a tax question."))
+        return
+
+    # Add this — shows "TaxPal is typing..." in Teams
+    await ctx.send_typing()
+
+    try:
+        result = await langflow_client.ask(question)
+        # ... rest of your code
+@app.on_members_added
+async def handle_new_members(ctx: ActivityContext):
+    await ctx.send(
+        MessageActivityInput(
+            text=(
+                "👋 Hi! I'm TaxPal, your Ugandan tax law assistant.\n\n"
+                "Ask me questions like:\n"
+                "• What is the VAT rate on imported electronics?\n"
+                "• Is rental income subject to withholding tax?\n"
+                "• What exemptions exist for small businesses?\n\n"
+                "I'll cite the specific act and section in my answer."
+            )
+        )
+    )        
 
 
 if __name__ == "__main__":
