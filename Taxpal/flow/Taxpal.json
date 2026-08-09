@@ -2853,7 +2853,7 @@
                 "trace_as_metadata": true,
                 "track_in_telemetry": false,
                 "type": "str",
-                "value": "BAAI/bge-large-en-v1.5"
+                "value": "BAAI/bge-m3"
               }
             },
             "tool_mode": false
