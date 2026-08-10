@@ -2,6 +2,8 @@
 env/.env.*.user
 env/.env.local
 env/.env.playground
+env/.env.example
+env/.env.local
 .env
 appPackage/build
 
