@@ -38,7 +38,7 @@ from pathlib import Path
 from qdrant_client import QdrantClient
 from qdrant_client.models import (
     VectorParams, SparseVectorParams, Distance,
-    PointStruct, SparseVector, NamedVector, NamedSparseVector,
+    PointStruct, SparseVector,
 )
 
 from config import Config

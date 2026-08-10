@@ -15,15 +15,37 @@ HOW TO RUN:
 """
 
 import os, re, time
+from urllib.parse import urljoin, urlparse
+
 import requests
 from bs4 import BeautifulSoup
 from pathlib import Path
-from urllib.parse import urljoin
 
 # ── Config ────────────────────────────────────────────────
 HEADERS = {"User-Agent": "TaxPalBot/1.0 (Educational tax law research)"}
 DELAY = 2  # seconds between requests — be respectful to servers
 BASE_DIR = Path(__file__).parent.parent / "data" / "raw"
+DEAD_SITES: set[str] = set()
+
+
+def _host_from_url(url: str) -> str:
+    parsed = urlparse(url)
+    return (parsed.netloc or parsed.path or url).lower()
+
+
+def _should_skip_url(url: str) -> bool:
+    return _host_from_url(url) in DEAD_SITES
+
+
+def _mark_dead_site(url: str, reason: str = "") -> None:
+    host = _host_from_url(url)
+    if not host:
+        return
+    DEAD_SITES.add(host)
+    if reason:
+        print(f"  ⚠ Skipping dead site {host}: {reason}")
+    else:
+        print(f"  ⚠ Skipping dead site {host}")
 
 
 def _save(content: str, folder: str, filename: str) -> str:
@@ -73,9 +95,14 @@ def scrape_ulii() -> list[dict]:
     results = []
 
     for title, url in ULII_ACTS:
+        if _should_skip_url(url):
+            print(f"  {title}... skipped (dead host)")
+            continue
         try:
             print(f"  {title}...", end=" ", flush=True)
             r = requests.get(url, headers=HEADERS, timeout=30)
+            if r.status_code in (401, 403, 404):
+                raise requests.HTTPError(f"HTTP {r.status_code}")
             r.raise_for_status()
             soup = BeautifulSoup(r.text, "lxml")
 
@@ -92,6 +119,7 @@ def scrape_ulii() -> list[dict]:
             print(f"({len(text):,} chars)")
 
         except Exception as e:
+            _mark_dead_site(url, str(e))
             print(f" {e}")
 
         time.sleep(DELAY)
@@ -119,13 +147,15 @@ def scrape_ura() -> list[dict]:
 
     for seed in URA_SEEDS:
         url = urljoin(URA_BASE, seed)
-        if url in visited:
+        if url in visited or _should_skip_url(url):
             continue
         visited.add(url)
 
         try:
             print(f"  {seed}...", end=" ", flush=True)
             r = requests.get(url, headers=HEADERS, timeout=30)
+            if r.status_code in (401, 403, 404):
+                raise requests.HTTPError(f"HTTP {r.status_code}")
             r.raise_for_status()
             soup = BeautifulSoup(r.text, "lxml")
 
@@ -140,23 +170,26 @@ def scrape_ura() -> list[dict]:
             # Download linked PDFs
             for a in soup.select('a[href$=".pdf"]')[:10]:
                 pdf_url = urljoin(url, a.get("href", ""))
-                if pdf_url in visited:
+                if pdf_url in visited or _should_skip_url(pdf_url):
                     continue
                 visited.add(pdf_url)
                 try:
                     pt = a.get_text(strip=True) or pdf_url.split("/")[-1]
                     pr = requests.get(pdf_url, headers=HEADERS, timeout=60)
+                    if pr.status_code in (401, 403, 404):
+                        raise requests.HTTPError(f"HTTP {pr.status_code}")
                     pr.raise_for_status()
                     pp = _save_bin(pr.content, "ura", _slug(pt) + ".pdf")
                     results.append({"title": pt, "source": "ura",
                                     "url": pdf_url, "path": pp, "type": "pdf"})
                     print(".", end="", flush=True)
-                except Exception:
-                    pass
+                except Exception as e:
+                    _mark_dead_site(pdf_url, str(e))
                 time.sleep(DELAY)
 
             print(" done")
         except Exception as e:
+            _mark_dead_site(url, str(e))
             print(f"error: {e}")
         time.sleep(DELAY)
 
@@ -179,13 +212,15 @@ def scrape_mofped() -> list[dict]:
 
     for seed in MOFPED_SEEDS:
         url = urljoin(MOFPED_BASE, seed)
-        if url in visited:
+        if url in visited or _should_skip_url(url):
             continue
         visited.add(url)
 
         try:
             print(f"  {seed}...", end=" ", flush=True)
             r = requests.get(url, headers=HEADERS, timeout=30)
+            if r.status_code in (401, 403, 404):
+                raise requests.HTTPError(f"HTTP {r.status_code}")
             r.raise_for_status()
             soup = BeautifulSoup(r.text, "lxml")
 
@@ -198,22 +233,25 @@ def scrape_mofped() -> list[dict]:
 
             for a in soup.select('a[href$=".pdf"]')[:15]:
                 pdf_url = urljoin(url, a.get("href", ""))
-                if pdf_url in visited:
+                if pdf_url in visited or _should_skip_url(pdf_url):
                     continue
                 visited.add(pdf_url)
                 try:
                     pt = a.get_text(strip=True) or pdf_url.split("/")[-1]
                     pr = requests.get(pdf_url, headers=HEADERS, timeout=60)
+                    if pr.status_code in (401, 403, 404):
+                        raise requests.HTTPError(f"HTTP {pr.status_code}")
                     pr.raise_for_status()
                     pp = _save_bin(pr.content, "mofped", _slug(pt) + ".pdf")
                     results.append({"title": pt, "source": "mofped",
                                     "url": pdf_url, "path": pp, "type": "pdf"})
                     print("", end="", flush=True)
-                except Exception:
-                    pass
+                except Exception as e:
+                    _mark_dead_site(pdf_url, str(e))
                 time.sleep(DELAY)
             print(" done")
         except Exception as e:
+            _mark_dead_site(url, str(e))
             print(f"error: {e}")
         time.sleep(DELAY)
 

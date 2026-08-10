@@ -8,7 +8,6 @@ qdrant-client>=1.10.0
 requests
 beautifulsoup4
 lxml
-unstructured[html,pdf]
 pymupdf
 FlagEmbedding
 torch

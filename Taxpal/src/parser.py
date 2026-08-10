@@ -34,40 +34,49 @@ CHUNK_OVERLAP = 150    # words of overlap between consecutive chunks
 
 
 def _extract_text_html(file_path: str) -> str:
-    """Extract text from an HTML file using unstructured."""
-    try:
-        from unstructured.partition.html import partition_html
-        elements = partition_html(filename=file_path)
-        return "\n\n".join(str(el) for el in elements if str(el).strip())
-    except ImportError:
-        # Fallback: use BeautifulSoup if unstructured not installed
-        from bs4 import BeautifulSoup
-        html = Path(file_path).read_text(encoding="utf-8", errors="replace")
-        soup = BeautifulSoup(html, "lxml")
-        # Remove script/style tags
-        for tag in soup(["script", "style", "nav", "footer", "header"]):
-            tag.decompose()
-        return soup.get_text(separator="\n", strip=True)
+    """Extract text from an HTML file using a lightweight HTML parser.
+
+    We intentionally avoid the heavy `unstructured` HTML partitioner here because it
+    crashes on XML processing instructions common in scraped government pages.
+    """
+    from bs4 import BeautifulSoup
+
+    html = Path(file_path).read_text(encoding="utf-8", errors="replace")
+    # Strip XML processing instructions and similar noise before parsing
+    html = re.sub(r"(?is)<?xml.*?>", "", html)
+    html = re.sub(r"(?is)<!DOCTYPE.*?>", "", html)
+    html = re.sub(r"(?is)<!--.*?-->", "", html)
+
+    # Prefer lxml for better HTML recovery when available
+    for parser_name in ("lxml", "html.parser"):
+        try:
+            soup = BeautifulSoup(html, parser_name)
+            for tag in soup(["script", "style", "nav", "footer", "header", "noscript"]):
+                tag.decompose()
+            text = soup.get_text(separator="\n", strip=True)
+            if text.strip():
+                return text
+        except Exception:
+            continue
+
+    return html
 
 
 def _extract_text_pdf(file_path: str) -> str:
-    """Extract text from a PDF file using unstructured."""
+    """Extract text from a PDF file using PyMuPDF (lightweight and reliable)."""
     try:
-        from unstructured.partition.pdf import partition_pdf
-        elements = partition_pdf(filename=file_path)
-        return "\n\n".join(str(el) for el in elements if str(el).strip())
-    except ImportError:
-        # Fallback: use PyMuPDF
-        try:
-            import fitz  # pymupdf
-            doc = fitz.open(file_path)
-            text = ""
-            for page in doc:
-                text += page.get_text() + "\n\n"
-            return text
-        except ImportError:
-            print(f"    ⚠ Cannot parse PDF (install 'unstructured' or 'pymupdf'): {file_path}")
-            return ""
+        import fitz
+        doc = fitz.open(file_path)
+        text = ""
+        for page in doc:
+            page_text = page.get_text()
+            if page_text.strip():
+                text += page_text + "\n\n"
+        doc.close()
+        return text
+    except Exception as exc:
+        print(f"    ⚠ Cannot parse PDF with PyMuPDF: {file_path} ({exc})")
+        return ""
 
 
 def _detect_section(text: str) -> Optional[str]:
