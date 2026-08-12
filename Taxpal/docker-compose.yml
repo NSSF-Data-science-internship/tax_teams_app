@@ -1,67 +1,83 @@
 services:
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: taxpal-qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant-data:/qdrant/storage
+    restart: unless-stopped
+
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: taxpal-postgres
+    environment:
+      POSTGRES_DB: taxpal
+      POSTGRES_USER: taxpal
+      POSTGRES_PASSWORD: taxpal_dev_password
+    ports:
+      # Use a project-specific port on Windows to avoid conflicts with locally
+      # PostgreSQL server. Containers still reach this service on port 5432.
+      - "15432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U taxpal -d taxpal"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  langflow:
+    build:
+      context: ./langflow-custom
+      dockerfile: Dockerfile
+    container_name: taxpal-langflow
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
+    ports:
+      - "7860:7860"
+    environment:
+      LANGFLOW_AUTO_LOGIN: "true"
+      LANGFLOW_SKIP_AUTH_AUTO_LOGIN: "true"
+      LANGFLOW_SSRF_ALLOWED_HOSTS: "qdrant,localhost,127.0.0.1,langflow,huggingface.co,router.huggingface.co"
+    volumes:
+      - langflow-data:/app/langflow
+    depends_on:
+      qdrant:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:7860/health', timeout=5)"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 30s
+    restart: unless-stopped
 
   taxpal-bot:
     build:
       context: .
       dockerfile: Dockerfile
-
     container_name: taxpal-bot
-
     ports:
       - "3978:3978"
-
     environment:
       PORT: "3978"
       LANGFLOW_BASE_URL: "http://langflow:7860"
-      LANGFLOW_FLOW_ID: "3db9a845-18f7-4fe2-8080-0e38202ce439"
+      LANGFLOW_FLOW_ID: "e4e1e9c0-6ba7-4b90-8f30-41bb4643543d"
       LANGFLOW_API_KEY: ""
-
+      QDRANT_URL: "http://qdrant:6333"
+      QDRANT_COLLECTION: "uganda_tax_law_v2"
     depends_on:
-      - langflow
-      - qdrant
-
+      langflow:
+        condition: service_healthy
+      qdrant:
+        condition: service_started
     restart: unless-stopped
-
-
-  langflow:
-    image: langflowai/langflow:latest
-
-    container_name: taxpal-langflow
-
-    dns:
-      - 1.1.1.1
-      - 8.8.8.8
-
-    ports:
-      - "7860:7860"
-
-    environment:
-      LANGFLOW_AUTO_LOGIN: "true"
-
-    volumes:
-      - langflow-data:/app/langflow
-
-    depends_on:
-      - qdrant
-
-    restart: unless-stopped
-
-
-  qdrant:
-    image: qdrant/qdrant:latest
-
-    container_name: taxpal-qdrant
-
-    ports:
-      - "6333:6333"
-      - "6334:6334"
-
-    volumes:
-      - qdrant-data:/qdrant/storage
-
-    restart: unless-stopped
-
 
 volumes:
   langflow-data:
   qdrant-data:
+  postgres-data:

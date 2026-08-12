@@ -125,7 +125,9 @@ if __name__ == "__main__":
         # Load previously parsed chunks
         if CHUNKS_FILE.exists():
             print(f"Loading chunks from {CHUNKS_FILE}...")
-            with open(CHUNKS_FILE) as f:
+            # Parser output is JSON encoded as UTF-8. Explicitly specifying the
+            # encoding avoids Windows falling back to cp1252 for tax-law text.
+            with open(CHUNKS_FILE, encoding="utf-8") as f:
                 chunks = json.load(f)
             run_embed(chunks)
         else:

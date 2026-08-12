@@ -11,3 +11,5 @@ lxml
 pymupdf
 FlagEmbedding
 torch
+langchain-postgres
+psycopg[binary]

@@ -175,7 +175,7 @@ async def handle_message(
                 )
             )
         )
-  
+"""  
 @app.on_members_added
 async def handle_new_members(ctx: ActivityContext):
     await ctx.send(
@@ -190,7 +190,7 @@ async def handle_new_members(ctx: ActivityContext):
             )
         )
     )        
-
+"""
 
 if __name__ == "__main__":
     asyncio.run(app.start())
