@@ -176,8 +176,11 @@ async def handle_message(
             )
         )
   
-@app.on_members_added
+@app.on_conversation_update
 async def handle_new_members(ctx: ActivityContext):
+    if not getattr(ctx.activity, "members_added", None):
+        return
+
     await ctx.send(
         MessageActivityInput(
             text=(

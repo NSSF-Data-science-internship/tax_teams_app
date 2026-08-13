@@ -13,7 +13,7 @@ services:
     environment:
       PORT: "3978"
       LANGFLOW_BASE_URL: "http://langflow:7860"
-      LANGFLOW_FLOW_ID: "3db9a845-18f7-4fe2-8080-0e38202ce439"
+      LANGFLOW_FLOW_ID: "b2126f6d-83f9-4e82-916c-b60e89a35dce"
       LANGFLOW_API_KEY: ""
 
     depends_on:
@@ -24,7 +24,9 @@ services:
 
 
   langflow:
-    image: langflowai/langflow:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.langflow
 
     container_name: taxpal-langflow
 
@@ -38,8 +40,11 @@ services:
     environment:
       LANGFLOW_AUTO_LOGIN: "true"
 
+    env_file:
+      - env/.env
+
     volumes:
-      - langflow-data:/app/langflow
+      - langflow-data:/app/langflow_data
 
     depends_on:
       - qdrant

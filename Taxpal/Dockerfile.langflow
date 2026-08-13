@@ -1,0 +1,24 @@
+FROM langflowai/langflow:latest
+
+USER root
+
+RUN mkdir -p /usr/local/share/ca-certificates /etc/pki/ca-trust/source/anchors /etc/ssl/certs
+
+# Copy the corporate/proxy root CA into common system trust anchor locations.
+COPY ./.certs/langflow-root.crt /usr/local/share/ca-certificates/langflow-root.crt
+COPY ./.certs/langflow-root.crt /etc/pki/ca-trust/source/anchors/langflow-root.crt
+
+# Ensure the cert is trusted at image build time, regardless of the base OS.
+RUN if command -v update-ca-certificates >/dev/null 2>&1; then update-ca-certificates; fi \
+&& if command -v update-ca-trust >/dev/null 2>&1; then update-ca-trust extract; fi \
+&& cp /etc/ssl/certs/ca-certificates.crt /tmp/langflow-ca-bundle.crt 2>/dev/null || true \
+&& cat /usr/local/share/ca-certificates/langflow-root.crt >> /tmp/langflow-ca-bundle.crt
+
+ENV SSL_CERT_FILE=/tmp/langflow-ca-bundle.crt
+ENV REQUESTS_CA_BUNDLE=/tmp/langflow-ca-bundle.crt
+ENV GRPC_DEFAULT_SSL_ROOTS_FILE_PATH=/tmp/langflow-ca-bundle.crt
+ENV PYTHONPATH=/app/langflow-sitecustomize
+
+USER user
+
+COPY --chown=user:user ./infra/langflow-sitecustomize /app/langflow-sitecustomize
