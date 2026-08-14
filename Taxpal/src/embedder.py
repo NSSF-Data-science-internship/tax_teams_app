@@ -20,9 +20,17 @@ from FlagEmbedding import BGEM3FlagModel
 COLLECTION_NAME = os.environ.get("PGVECTOR_COLLECTION", "uganda_tax_law")
 
 # Because ingest.py runs on your Windows machine:
+POSTGRES_HOST = os.getenv(
+    "POSTGRES_HOST",
+    "localhost",
+)
+POSTGRES_PORT = os.getenv(
+    "POSTGRES_PORT",
+    "15432",
+)
 POSTGRES_CONNECTION = os.environ.get(
     "POSTGRES_CONNECTION",
-    "postgresql+psycopg://taxpal:taxpal_dev_password@127.0.0.1:15432/taxpal",
+    f"postgresql+psycopg://taxpal:taxpal_dev_password@{POSTGRES_HOST}:{POSTGRES_PORT}/taxpal"
 )
 
 BATCH_SIZE = 32

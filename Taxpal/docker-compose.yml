@@ -31,8 +31,8 @@ services:
 
   langflow:
     build:
-      context: ./langflow-custom
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: Dockerfile.langflow-local-bge
     container_name: taxpal-langflow
     dns:
       - 1.1.1.1
@@ -77,6 +77,32 @@ services:
         condition: service_started
     restart: unless-stopped
 
+  tax-search:
+    build:
+      context: .
+      dockerfile: Dockerfile.tax-search
+
+    container_name: taxpal-tax-search
+
+    ports:
+      - "8001:8001"
+
+    environment:
+      POSTGRES_HOST: "postgres"
+      POSTGRES_PORT: "5432"
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8001/health', timeout=5)"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+
+    restart: unless-stopped
 volumes:
   langflow-data:
   qdrant-data:

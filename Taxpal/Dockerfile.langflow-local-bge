@@ -1,0 +1,10 @@
+FROM langflowai/langflow:latest
+
+USER root
+
+RUN /app/.venv/bin/pip install --no-cache-dir \
+    torch \
+    sentence-transformers \
+    FlagEmbedding
+
+USER 1000

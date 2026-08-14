@@ -13,3 +13,8 @@ FlagEmbedding
 torch
 langchain-postgres
 psycopg[binary]
+fastapi
+uvicorn
+openai >=3.0.0
+google-genai
+streamlit

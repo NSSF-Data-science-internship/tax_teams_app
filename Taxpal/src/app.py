@@ -1,4 +1,5 @@
 import asyncio
+import httpx
 
 from microsoft_teams.apps import (
     App,
@@ -11,8 +12,9 @@ from microsoft_teams.api import (
 )
 
 from config import Config
-from langflow_client import LangflowClient
-
+#from langflow_client import LangflowClient
+from tax_search_client import search_tax_law
+from llm_client import answer_tax_question
 
 config = Config()
 
@@ -57,121 +59,75 @@ app = App(
 )
 
 
-langflow_client = LangflowClient(
-    base_url=config.LANGFLOW_BASE_URL,
-    flow_id=config.LANGFLOW_FLOW_ID,
-)
+#langflow_client = LangflowClient(
+    #base_url=config.LANGFLOW_BASE_URL,
+    #flow_id=config.LANGFLOW_FLOW_ID,
+#)
 
 
 @app.on_message
 async def handle_message(
     ctx: ActivityContext[MessageActivity]
 ):
-    """
-    Handle a message received from Microsoft Teams.
-    """
+    """Handle TaxPal questions."""
 
     question = (
         ctx.activity.text or ""
     ).strip()
 
     if not question:
+        await ctx.send(
+            MessageActivityInput(
+                text="Please enter a tax question."
+            )
+        )
+        return
+
+    try:
+        # 1. Retrieve relevant Ugandan tax-law chunks
+        documents = await search_tax_law(
+            question,
+            k=4,
+        )
+
+        # 2. Ask Azure OpenAI to answer
+        #    using only those retrieved documents
+        answer = await asyncio.to_thread(
+            answer_tax_question,
+            question,
+            documents,
+        )
+
+        await ctx.send(
+            MessageActivityInput(
+                text=answer
+            )
+        )
+
+    except httpx.HTTPError as exc:
+        print(
+            f"Tax search error: {exc}"
+        )
 
         await ctx.send(
             MessageActivityInput(
                 text=(
-                    "Please enter a tax question."
+                    "I couldn't access the tax-law "
+                    "knowledge base right now."
                 )
             )
         )
 
-        return
-
-    print(
-        f"Question received: {question}"
-    )
-
-    try:
-
-        result = await langflow_client.ask(
-            question
-        )
-
-        answer = result.get(
-            "answer",
-            "I could not generate an answer."
-        )
-
-        sources = result.get(
-            "sources",
-            []
-        )
-
-        response = answer
-
-        if sources:
-
-            response += "\n\nSources:"
-
-            for source in sources:
-
-                if isinstance(source, dict):
-
-                    title = source.get(
-                        "title",
-                        "Unknown source"
-                    )
-
-                    section = source.get(
-                        "section",
-                        ""
-                    )
-
-                    if section:
-
-                        response += (
-                            f"\n• {title}"
-                            f" — {section}"
-                        )
-
-                    else:
-
-                        response += (
-                            f"\n• {title}"
-                        )
-
-                else:
-
-                    response += (
-                        f"\n• {source}"
-                    )
-
-        response += (
-            "\n\n"
-            "TaxPal provides information for "
-            "informational purposes and should "
-            "not be treated as professional "
-            "tax or legal advice."
-        )
-
-        await ctx.send(
-            MessageActivityInput(
-                text=response
-            )
-        )
-
-    except Exception as error:
-
+    except Exception as exc:
         print(
-            "Error processing message:",
-            error
+            f"TaxPal error: {exc}"
         )
 
         await ctx.send(
             MessageActivityInput(
                 text=(
-                    "Sorry, I couldn't process "
-                    "your question right now."
+                    "Sorry, I couldn't process that "
+                    "tax question right now."
                 )
             )
         )
