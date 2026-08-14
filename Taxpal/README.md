@@ -8,6 +8,7 @@ The project currently supports:
 - Azure OpenAI as an alternative provider.
 - A Microsoft Teams bot interface.
 - A Streamlit dashboard for inspecting retrieval, evidence, timing, and answers.
+- Multi-turn conversation memory with contextual follow-up rewriting.
 - A FastAPI tax-law search service.
 - A scrape, parse, embed, and store ingestion pipeline.
 
@@ -37,13 +38,15 @@ flowchart LR
 
 For each question:
 
-1. The interface sends the question to `tax_search_client.py`.
-2. The client calls `POST /search-tax-law` on the FastAPI service.
-3. The service embeds the question with BGE-M3.
-4. pgvector returns the most similar tax-law chunks.
-5. `llm_client.py` builds a prompt containing the question and retrieved evidence.
-6. Gemini or Azure OpenAI generates a grounded answer.
-7. The interface displays the answer; the dashboard also exposes the retrieved evidence and timings.
+1. `conversation.py` reads the current message and recent conversation history.
+2. Greetings and acknowledgements receive lightweight conversational replies.
+3. A context-dependent follow-up is rewritten into a standalone search question.
+4. `tax_search_client.py` calls `POST /search-tax-law` on the FastAPI service.
+5. The service embeds the rewritten question with BGE-M3.
+6. pgvector returns the most similar tax-law chunks.
+7. `llm_client.py` builds a prompt containing recent history, the current question, and retrieved evidence.
+8. Gemini or Azure OpenAI generates a grounded conversational answer.
+9. The interface stores the turn and displays the answer. Requests such as “explain that more simply” reuse the previous evidence instead of searching again.
 
 ## Active and optional services
 
@@ -78,6 +81,7 @@ Taxpal/
 │   ├── tax_search_api.py       FastAPI retrieval service
 │   ├── tax_search_client.py    Async client for the retrieval API
 │   ├── llm_client.py           Gemini/Azure provider selection
+│   ├── conversation.py         Multi-turn orchestration and retrieval decisions
 │   ├── test_taxpal.py          End-to-end CLI flow test
 │   └── taxpal_dashboard.py     Streamlit flow dashboard
 ├── docker-compose.yml          Local service orchestration
@@ -213,7 +217,7 @@ Launch the Streamlit dashboard from `Taxpal/src`:
 
 Open `http://localhost:8501`.
 
-The dashboard displays:
+The conversational dashboard displays:
 
 - The active provider and model.
 - The question and requested retrieval count.
@@ -223,6 +227,9 @@ The dashboard displays:
 - A source metadata table.
 - Expandable raw text and metadata for every retrieved chunk.
 - Full error details when a stage fails.
+- Chat history and contextual follow-up answers.
+- The standalone query generated from each follow-up.
+- Whether evidence was freshly retrieved or reused.
 
 ## Ingest or refresh tax-law data
 
@@ -308,11 +315,11 @@ Invoke-RestMethod `
 
 ## Tests
 
-Run the isolated scraper unit test from `Taxpal/src`:
+Run the isolated conversation and scraper unit tests from `Taxpal/src`:
 
 ```powershell
 $env:PYTHONIOENCODING="utf-8"
-.\.venv\Scripts\python.exe -m unittest test_scraper.py
+.\.venv\Scripts\python.exe -m unittest test_scraper.py test_conversation.py
 ```
 
 Notes:
@@ -320,6 +327,7 @@ Notes:
 - `test_taxpal.py` is an end-to-end executable test and makes a real LLM request; run it separately as documented above.
 - `test_pgvector.py` is currently an executable integration script rather than an isolated unit test; importing it loads BGE-M3 and connects to PostgreSQL.
 - `test_scraper.py` is the small isolated unit test.
+- `test_conversation.py` verifies conversational replies and evidence reuse without calling external services.
 - Do not use broad unittest discovery yet because the two integration scripts execute external work when imported.
 
 ## Troubleshooting
@@ -386,5 +394,6 @@ docker exec taxpal-postgres psql -U taxpal -d taxpal -c "SELECT count(*) FROM la
 - The answer generator does not yet emit structured citations linking every claim to a specific retrieved chunk.
 - Retrieval quality has no automated evaluation dataset or relevance metrics yet.
 - The Teams Docker service needs provider secrets injected at runtime.
+- Teams memory is currently held in the bot process and is lost on restart; PostgreSQL-backed conversation persistence is the next step.
 - Langflow and Qdrant remain in Compose even though the current production path uses FastAPI and pgvector.
 - Several integration scripts perform work during import and should eventually be converted into isolated tests.

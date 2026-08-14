@@ -81,7 +81,10 @@ SYSTEM_PROMPT = (
 )
 
 
-def _answer_with_gemini(prompt: str) -> str:
+def _generate_with_gemini(
+    prompt: str,
+    system_instruction: str = SYSTEM_PROMPT,
+) -> str:
     if not GEMINI_API_KEY or GEMINI_API_KEY.startswith("your-"):
         raise RuntimeError(
             "Set a real GEMINI_API_KEY in Taxpal/env/.env.local."
@@ -95,19 +98,22 @@ def _answer_with_gemini(prompt: str) -> str:
         model=GEMINI_MODEL,
         contents=prompt,
         config=types.GenerateContentConfig(
-            system_instruction=SYSTEM_PROMPT,
+            system_instruction=system_instruction,
             temperature=0.1,
         ),
     )
     return response.text or "I could not generate an answer."
 
 
-def _answer_with_azure(prompt: str) -> str:
+def _generate_with_azure(
+    prompt: str,
+    system_instruction: str = SYSTEM_PROMPT,
+) -> str:
     client = _get_client()
     response = client.chat.completions.create(
         model=AZURE_OPENAI_DEPLOYMENT,
         messages=[
-            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "system", "content": system_instruction},
             {"role": "user", "content": prompt},
         ],
         temperature=0.1,
@@ -115,9 +121,61 @@ def _answer_with_azure(prompt: str) -> str:
     return response.choices[0].message.content or "I could not generate an answer."
 
 
+def _generate_text(
+    prompt: str,
+    system_instruction: str = SYSTEM_PROMPT,
+) -> str:
+    if LLM_PROVIDER == "gemini":
+        return _generate_with_gemini(prompt, system_instruction)
+    if LLM_PROVIDER == "azure":
+        return _generate_with_azure(prompt, system_instruction)
+
+    raise RuntimeError(
+        f"Unsupported LLM_PROVIDER '{LLM_PROVIDER}'. Use 'gemini' or 'azure'."
+    )
+
+
+def _format_history(history: list[dict] | None) -> str:
+    if not history:
+        return "No previous conversation."
+
+    lines = []
+    for message in history[-8:]:
+        role = str(message.get("role", "user")).upper()
+        content = str(message.get("content", "")).strip()
+        if content:
+            lines.append(f"{role}: {content}")
+    return "\n".join(lines) or "No previous conversation."
+
+
+def rewrite_question_for_retrieval(
+    question: str,
+    history: list[dict] | None = None,
+) -> str:
+    """Turn a context-dependent follow-up into a standalone search query."""
+    if not history:
+        return question.strip()
+
+    prompt = (
+        f"CONVERSATION:\n{_format_history(history)}\n\n"
+        f"NEW USER MESSAGE:\n{question.strip()}\n\n"
+        "Return only one concise, standalone tax-law search question. "
+        "Resolve pronouns such as 'that' or 'it' using the conversation."
+    )
+    rewritten = _generate_text(
+        prompt,
+        system_instruction=(
+            "Rewrite follow-up questions for a Ugandan tax-law retrieval "
+            "system. Do not answer the question and do not add commentary."
+        ),
+    )
+    return rewritten.strip().strip('"') or question.strip()
+
+
 def answer_tax_question(
     question: str,
     documents: list[dict],
+    history: list[dict] | None = None,
 ) -> str:
     """
     Generate an answer grounded in retrieved tax-law documents.
@@ -168,15 +226,8 @@ Section: {section}
     )
 
     prompt = (
-        f"QUESTION:\n{question}\n\n"
+        f"RECENT CONVERSATION:\n{_format_history(history)}\n\n"
+        f"CURRENT QUESTION:\n{question}\n\n"
         f"TAX-LAW CONTEXT:\n{context}"
     )
-
-    if LLM_PROVIDER == "gemini":
-        return _answer_with_gemini(prompt)
-    if LLM_PROVIDER == "azure":
-        return _answer_with_azure(prompt)
-
-    raise RuntimeError(
-        f"Unsupported LLM_PROVIDER '{LLM_PROVIDER}'. Use 'gemini' or 'azure'."
-    )
+    return _generate_text(prompt)

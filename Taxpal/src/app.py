@@ -13,10 +13,14 @@ from microsoft_teams.api import (
 
 from config import Config
 #from langflow_client import LangflowClient
-from tax_search_client import search_tax_law
-from llm_client import answer_tax_question
+from conversation import run_conversation_turn
 
 config = Config()
+
+# Development-stage memory keyed by Teams conversation ID. This survives
+# ordinary turns but is cleared whenever the bot process restarts.
+conversation_histories: dict[str, list[dict]] = {}
+MAX_HISTORY_MESSAGES = 12
 
 
 def create_token_factory():
@@ -83,24 +87,46 @@ async def handle_message(
         )
         return
 
+    conversation = getattr(ctx.activity, "conversation", None)
+    conversation_id = (
+        getattr(conversation, "id", None)
+        or getattr(ctx.activity, "conversation_id", None)
+        or "default"
+    )
+
+    if question.lower() in {"clear conversation", "reset conversation"}:
+        conversation_histories.pop(conversation_id, None)
+        await ctx.send(
+            MessageActivityInput(
+                text="Conversation cleared. What tax question can I help with?"
+            )
+        )
+        return
+
+    history = conversation_histories.setdefault(conversation_id, [])
+
     try:
-        # 1. Retrieve relevant Ugandan tax-law chunks
-        documents = await search_tax_law(
+        result = await run_conversation_turn(
             question,
+            history=history,
             k=4,
         )
 
-        # 2. Ask Azure OpenAI to answer
-        #    using only those retrieved documents
-        answer = await asyncio.to_thread(
-            answer_tax_question,
-            question,
-            documents,
+        history.extend(
+            [
+                {"role": "user", "content": question},
+                {
+                    "role": "assistant",
+                    "content": result["answer"],
+                    "documents": result["documents"],
+                },
+            ]
         )
+        del history[:-MAX_HISTORY_MESSAGES]
 
         await ctx.send(
             MessageActivityInput(
-                text=answer
+                text=result["answer"]
             )
         )
 
