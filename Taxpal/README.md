@@ -9,6 +9,8 @@ The project currently supports:
 - A Microsoft Teams bot interface.
 - A Streamlit dashboard for inspecting retrieval, evidence, timing, and answers.
 - Multi-turn conversation memory with contextual follow-up rewriting.
+- PostgreSQL-backed conversation history for Streamlit sessions and Teams conversations.
+- Allowlisted live-web fallback for current or weakly supported questions.
 - A FastAPI tax-law search service.
 - A scrape, parse, embed, and store ingestion pipeline.
 
@@ -29,7 +31,11 @@ flowchart LR
     API --> EMB[BGE-M3 query embedding]
     EMB --> PG[(PostgreSQL + pgvector)]
     PG --> DOCS[Relevant tax-law chunks]
-    DOCS --> LLM[llm_client.py]
+    DOCS --> CHECK{Evidence sufficient?}
+    CHECK -->|No or current question| WEB[Trusted official web search]
+    CHECK -->|Yes| LLM
+    WEB --> LLM
+    LLM[llm_client.py]
     LLM -->|LLM_PROVIDER=gemini| GEMINI[Google Gemini]
     LLM -->|LLM_PROVIDER=azure| AZURE[Azure OpenAI]
     GEMINI --> ANSWER[Grounded answer]
@@ -47,6 +53,8 @@ For each question:
 7. `llm_client.py` builds a prompt containing recent history, the current question, and retrieved evidence.
 8. Gemini or Azure OpenAI generates a grounded conversational answer.
 9. The interface stores the turn and displays the answer. Requests such as “explain that more simply” reuse the previous evidence instead of searching again.
+
+When local evidence is missing, scores below the configured threshold, or the user asks for current/latest information, `trusted_web.py` requests grounded search and retains results only from the approved domain allowlist. If live search is unavailable, TaxPal reports that condition and continues with local evidence where possible.
 
 ## Active and optional services
 
@@ -82,6 +90,8 @@ Taxpal/
 │   ├── tax_search_client.py    Async client for the retrieval API
 │   ├── llm_client.py           Gemini/Azure provider selection
 │   ├── conversation.py         Multi-turn orchestration and retrieval decisions
+│   ├── conversation_store.py   PostgreSQL conversation persistence
+│   ├── trusted_web.py          Allowlisted live official-source fallback
 │   ├── test_taxpal.py          End-to-end CLI flow test
 │   └── taxpal_dashboard.py     Streamlit flow dashboard
 ├── docker-compose.yml          Local service orchestration
@@ -124,11 +134,14 @@ The Azure deployment must support chat completions. A realtime-only deployment s
 ### Retrieval settings
 
 ```dotenv
-TAX_SEARCH_URL=http://localhost:8001
+TAX_SEARCH_URL=http://127.0.0.1:8001
 POSTGRES_HOST=localhost
 POSTGRES_PORT=15432
 PGVECTOR_COLLECTION=uganda_tax_law
+WEB_RELEVANCE_THRESHOLD=0.35
 ```
+
+`CONVERSATION_DATABASE_URL` can override the history database connection. By default, history uses the same PostgreSQL instance as pgvector but stores data in a separate `taxpal_conversations` schema.
 
 Environment variables exported in the shell take priority. Otherwise, `llm_client.py` loads `env/.env.local` and then `env/.env`.
 
@@ -230,6 +243,27 @@ The conversational dashboard displays:
 - Chat history and contextual follow-up answers.
 - The standalone query generated from each follow-up.
 - Whether evidence was freshly retrieved or reused.
+- Whether trusted official web evidence was added or the fallback was unavailable.
+
+The dashboard creates a session identifier in the `?session=` query parameter. Refreshing or reopening that URL reloads the stored conversation. Treat the session URL as private until user authentication is added.
+
+## Trusted live sources
+
+Live fallback is restricted to the allowlist in `src/trusted_web.py`:
+
+- Uganda Revenue Authority — `ura.go.ug`
+- Uganda Legal Information Institute — `ulii.org`
+- Ministry of Finance, Planning and Economic Development — `finance.go.ug`
+- Parliament of Uganda — `parliament.go.ug`
+- Bank of Uganda — `bou.or.ug`
+
+TaxPal triggers live search when:
+
+- No local documents are returned.
+- Scored local evidence is below `WEB_RELEVANCE_THRESHOLD`.
+- The question contains a current-information request such as “latest,” “recent,” “today,” or “check official sources.”
+
+Only grounding citations identified as an approved domain enter the final evidence set. Each accepted web source is labelled `trusted_web` and records its organization, URL, domain, and access time. An unavailable or quota-limited web search does not prevent a local-document answer.
 
 ## Ingest or refresh tax-law data
 
@@ -315,11 +349,11 @@ Invoke-RestMethod `
 
 ## Tests
 
-Run the isolated conversation and scraper unit tests from `Taxpal/src`:
+Run the isolated conversation, trust-policy, and scraper unit tests from `Taxpal/src`:
 
 ```powershell
 $env:PYTHONIOENCODING="utf-8"
-.\.venv\Scripts\python.exe -m unittest test_scraper.py test_conversation.py
+.\.venv\Scripts\python.exe -m unittest test_scraper.py test_conversation.py test_trusted_web.py
 ```
 
 Notes:
@@ -328,6 +362,7 @@ Notes:
 - `test_pgvector.py` is currently an executable integration script rather than an isolated unit test; importing it loads BGE-M3 and connects to PostgreSQL.
 - `test_scraper.py` is the small isolated unit test.
 - `test_conversation.py` verifies conversational replies and evidence reuse without calling external services.
+- `test_trusted_web.py` verifies domain rejection, current-query routing, and relevance thresholds without calling external services.
 - Do not use broad unittest discovery yet because the two integration scripts execute external work when imported.
 
 ## Troubleshooting
@@ -355,6 +390,10 @@ The selected model may no longer be available to the API key. Set `GEMINI_MODEL`
 
 The model is temporarily under high demand. Retry later or select another supported model. A broad alias such as `gemini-flash-latest` may point to a busier model.
 
+### Gemini live search returns `429 RESOURCE_EXHAUSTED`
+
+The API key has exhausted its current grounding/search quota. Local retrieval remains available. Wait for quota reset or adjust the Gemini project’s quota/billing before retrying an explicit “check official sources” question.
+
 ### `The requested operation is unsupported` from Azure
 
 The configured deployment does not support the Chat Completions call. Use a chat-capable Azure OpenAI deployment rather than a realtime-only model.
@@ -373,6 +412,10 @@ docker compose up -d tax-search
 - Host programs use `localhost:15432`.
 - Compose services use `postgres:5432`.
 
+### `RemoteProtocolError: Server disconnected without sending a response`
+
+First confirm `http://127.0.0.1:8001/health` responds. BGE-M3 can take several minutes to download and warm up after the first build. Host-side Python should use `TAX_SEARCH_URL=http://127.0.0.1:8001`; on some Windows/Docker configurations, `localhost` resolves through an unreliable IPv6 or proxy path. The client retries transient transport errors and ignores ambient proxy variables for this local service.
+
 ### Search returns a pgvector schema error
 
 Do not delete the database volume immediately. Inspect the existing table and preserve indexed data before migrating or recreating the schema:
@@ -384,6 +427,7 @@ docker exec taxpal-postgres psql -U taxpal -d taxpal -c "SELECT count(*) FROM la
 ## Security and data quality
 
 - Never commit `env/.env.local`, API keys, access tokens, or passwords.
+- Conversation history contains user questions and generated answers. Apply retention rules and authentication before production use.
 - Treat retrieved text as evidence, not as automatically correct law.
 - Keep document dates and sources in chunk metadata.
 - Re-ingest when legislation or official guidance changes.
@@ -394,6 +438,7 @@ docker exec taxpal-postgres psql -U taxpal -d taxpal -c "SELECT count(*) FROM la
 - The answer generator does not yet emit structured citations linking every claim to a specific retrieved chunk.
 - Retrieval quality has no automated evaluation dataset or relevance metrics yet.
 - The Teams Docker service needs provider secrets injected at runtime.
-- Teams memory is currently held in the bot process and is lost on restart; PostgreSQL-backed conversation persistence is the next step.
+- Streamlit history links are identifiers, not authenticated accounts. Production deployment requires real sign-in and authorization checks before exposing stored history.
+- Trusted web evidence currently depends on Gemini grounding quota and availability.
 - Langflow and Qdrant remain in Compose even though the current production path uses FastAPI and pgvector.
 - Several integration scripts perform work during import and should eventually be converted into isolated tests.

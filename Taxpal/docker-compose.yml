@@ -90,6 +90,10 @@ services:
     environment:
       POSTGRES_HOST: "postgres"
       POSTGRES_PORT: "5432"
+      HF_HOME: "/root/.cache/huggingface"
+
+    volumes:
+      - huggingface-cache:/root/.cache/huggingface
 
     depends_on:
       postgres:
@@ -100,10 +104,11 @@ services:
       interval: 15s
       timeout: 10s
       retries: 10
-      start_period: 60s
+      start_period: 10m
 
     restart: unless-stopped
 volumes:
   langflow-data:
   qdrant-data:
   postgres-data:
+  huggingface-cache:

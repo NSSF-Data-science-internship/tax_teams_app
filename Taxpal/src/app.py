@@ -14,6 +14,7 @@ from microsoft_teams.api import (
 from config import Config
 #from langflow_client import LangflowClient
 from conversation import run_conversation_turn
+from conversation_store import clear_history, load_history, save_turn
 
 config = Config()
 
@@ -96,6 +97,10 @@ async def handle_message(
 
     if question.lower() in {"clear conversation", "reset conversation"}:
         conversation_histories.pop(conversation_id, None)
+        try:
+            await asyncio.to_thread(clear_history, conversation_id)
+        except Exception as exc:
+            print(f"Persistent history clear failed: {exc}")
         await ctx.send(
             MessageActivityInput(
                 text="Conversation cleared. What tax question can I help with?"
@@ -103,7 +108,14 @@ async def handle_message(
         )
         return
 
-    history = conversation_histories.setdefault(conversation_id, [])
+    sender = getattr(ctx.activity, "from_", None)
+    user_id = getattr(sender, "id", None) or "unknown-teams-user"
+
+    try:
+        history = await asyncio.to_thread(load_history, conversation_id)
+    except Exception as exc:
+        print(f"Persistent history load failed: {exc}")
+        history = conversation_histories.setdefault(conversation_id, [])
 
     try:
         result = await run_conversation_turn(
@@ -123,6 +135,19 @@ async def handle_message(
             ]
         )
         del history[:-MAX_HISTORY_MESSAGES]
+        conversation_histories[conversation_id] = history
+
+        try:
+            await asyncio.to_thread(
+                save_turn,
+                conversation_id,
+                user_id,
+                "teams",
+                question,
+                result,
+            )
+        except Exception as exc:
+            print(f"Persistent history save failed: {exc}")
 
         await ctx.send(
             MessageActivityInput(

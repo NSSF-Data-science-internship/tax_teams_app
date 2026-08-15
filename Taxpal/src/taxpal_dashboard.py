@@ -1,10 +1,13 @@
 import asyncio
+import uuid
 
 import pandas as pd
 import streamlit as st
 
 from conversation import run_conversation_turn
+from conversation_store import clear_history, load_history, save_turn
 from llm_client import GEMINI_MODEL, LLM_PROVIDER
+from tax_search_client import TaxSearchUnavailable
 
 
 st.set_page_config(
@@ -13,13 +16,27 @@ st.set_page_config(
     layout="wide",
 )
 
-st.session_state.setdefault("messages", [])
+session_id = st.query_params.get("session")
+if not session_id:
+    session_id = str(uuid.uuid4())
+    st.query_params["session"] = session_id
+
+if "messages" not in st.session_state:
+    try:
+        st.session_state.messages = load_history(session_id)
+        st.session_state.history_status = "Connected"
+    except Exception as exc:
+        st.session_state.messages = []
+        st.session_state.history_status = f"Unavailable: {exc}"
+
 st.session_state.setdefault("result_count", 4)
 
 with st.sidebar:
     st.header("Flow settings")
     st.metric("LLM provider", LLM_PROVIDER.title(), border=True)
     st.metric("Model", GEMINI_MODEL, border=True)
+    st.caption(f"History: {st.session_state.history_status}")
+    st.caption(f"Session: `{session_id}`")
     st.slider(
         "Documents to retrieve",
         1,
@@ -27,6 +44,11 @@ with st.sidebar:
         key="result_count",
     )
     if st.button("Clear conversation", icon=":material/delete:"):
+        try:
+            clear_history(session_id)
+            st.session_state.history_status = "Connected"
+        except Exception as exc:
+            st.session_state.history_status = f"Unavailable: {exc}"
         st.session_state.messages = []
         st.rerun()
 
@@ -66,6 +88,19 @@ def render_diagnostics(message: dict) -> None:
                 "Generation",
                 f"{diagnostics.get('generation_seconds', 0):.2f}s",
                 border=True,
+            )
+            st.metric(
+                "Official web",
+                f"{diagnostics.get('web_seconds', 0):.2f}s",
+                border=True,
+            )
+
+        if diagnostics.get("web_fallback_used"):
+            st.success("Included evidence from approved official websites.")
+        elif diagnostics.get("web_error"):
+            st.warning(
+                "Official web fallback was unavailable; the answer used local "
+                f"evidence only. Details: {diagnostics['web_error']}"
             )
 
         if documents:
@@ -148,6 +183,20 @@ if prompt:
             st.markdown(result["answer"])
             render_diagnostics(assistant_message)
             st.session_state.messages.append(assistant_message)
+            try:
+                save_turn(
+                    session_id,
+                    f"streamlit:{session_id}",
+                    "streamlit",
+                    prompt,
+                    result,
+                )
+                st.session_state.history_status = "Connected"
+            except Exception as exc:
+                st.session_state.history_status = f"Unavailable: {exc}"
+                st.warning("The answer worked, but persistent history was not saved.")
+        except TaxSearchUnavailable as exc:
+            st.warning(str(exc))
         except Exception as exc:
             st.error("TaxPal could not complete this turn.")
             st.exception(exc)

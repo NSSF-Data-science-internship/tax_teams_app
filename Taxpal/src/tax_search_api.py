@@ -47,7 +47,7 @@ def health():
 @app.post("/search-tax-law")
 def search_tax_law(request: SearchRequest):
 
-    results = store.similarity_search(
+    results = store.similarity_search_with_relevance_scores(
         request.query,
         k=request.k,
     )
@@ -58,8 +58,8 @@ def search_tax_law(request: SearchRequest):
         "results": [
             {
                 "text": doc.page_content,
-                "metadata": doc.metadata,
+                "metadata": {**doc.metadata, "relevance_score": score},
             }
-            for doc in results
+            for doc, score in results
         ],
     }

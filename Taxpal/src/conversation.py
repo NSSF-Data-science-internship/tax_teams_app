@@ -4,6 +4,7 @@ from typing import Any
 
 from llm_client import answer_tax_question, rewrite_question_for_retrieval
 from tax_search_client import search_tax_law
+from trusted_web import search_trusted_web, should_search_web
 
 
 GREETING_WORDS = {"hi", "hello", "hey", "good morning", "good afternoon"}
@@ -71,6 +72,9 @@ async def run_conversation_turn(
 
     rewrite_seconds = 0.0
     search_seconds = 0.0
+    web_seconds = 0.0
+    web_error = None
+    web_documents = []
     retrieval_reused = _can_reuse_evidence(question, history)
 
     if retrieval_reused:
@@ -88,6 +92,18 @@ async def run_conversation_turn(
         search_started = time.perf_counter()
         documents = await search_tax_law(search_query, k=k)
         search_seconds = time.perf_counter() - search_started
+
+        if should_search_web(question, documents):
+            web_started = time.perf_counter()
+            try:
+                web_documents = await asyncio.to_thread(
+                    search_trusted_web,
+                    search_query,
+                )
+                documents = documents + web_documents
+            except Exception as exc:
+                web_error = str(exc)
+            web_seconds = time.perf_counter() - web_started
 
     generation_started = time.perf_counter()
     answer = await asyncio.to_thread(
@@ -107,5 +123,8 @@ async def run_conversation_turn(
         "rewrite_seconds": rewrite_seconds,
         "search_seconds": search_seconds,
         "generation_seconds": generation_seconds,
+        "web_seconds": web_seconds,
+        "web_fallback_used": bool(web_documents),
+        "web_error": web_error,
         "total_seconds": time.perf_counter() - started,
     }
