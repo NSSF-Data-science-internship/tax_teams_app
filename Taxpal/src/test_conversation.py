@@ -40,6 +40,23 @@ class ConversationTests(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(result["retrieval_reused"])
         self.assertFalse(result["retrieval_used"])
         self.assertEqual(result["documents"], documents)
+        async def test_calculation_request_is_detected(self):
+                with patch(
+                    "conversation.answer_tax_question",
+                    return_value="Calculation test",
+                ):
+                    with patch(
+                        "conversation.search_tax_law",
+                        return_value=[],
+                    ):
+                        result = await run_conversation_turn(
+                            "Calculate VAT on 1,000,000",
+                            history=[],
+                        )
+        
+                self.assertTrue(
+                    result["calculation_requested"]
+                )
 
 
 if __name__ == "__main__":

@@ -2,9 +2,13 @@ import asyncio
 import time
 from typing import Any
 
+from calculator_intent import is_calculation_request
 from llm_client import answer_tax_question, rewrite_question_for_retrieval
 from tax_search_client import search_tax_law
 from trusted_web import search_trusted_web, should_search_web
+from calculator_intent import is_calculation_request 
+from calculator import calculate_percentage, calculate_total_with_percentage
+from calculation_parser import parse_calculation_request 
 
 
 GREETING_WORDS = {"hi", "hello", "hey", "good morning", "good afternoon"}
@@ -57,10 +61,12 @@ async def run_conversation_turn(
     started = time.perf_counter()
 
     simple_reply = _simple_conversation_reply(question)
+    calculation_requested = is_calculation_request(question)
     if simple_reply:
         return {
             "answer": simple_reply,
             "documents": [],
+            "calculation_requested": calculation_requested,
             "search_query": None,
             "retrieval_used": False,
             "retrieval_reused": False,
@@ -69,6 +75,8 @@ async def run_conversation_turn(
             "generation_seconds": 0.0,
             "total_seconds": time.perf_counter() - started,
         }
+    
+        
 
     rewrite_seconds = 0.0
     search_seconds = 0.0
