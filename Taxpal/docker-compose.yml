@@ -61,16 +61,27 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: taxpal-bot
+    env_file:
+      - ./env/.env.local
     ports:
       - "3978:3978"
     environment:
       PORT: "3978"
+      TAXPAL_ENV: "development"
+      TAXPAL_PLAYGROUND: "true"
+      TAX_SEARCH_URL: "http://tax-search:8001"
+      POSTGRES_HOST: "postgres"
+      POSTGRES_PORT: "5432"
       LANGFLOW_BASE_URL: "http://langflow:7860"
       LANGFLOW_FLOW_ID: "e4e1e9c0-6ba7-4b90-8f30-41bb4643543d"
       LANGFLOW_API_KEY: ""
       QDRANT_URL: "http://qdrant:6333"
       QDRANT_COLLECTION: "uganda_tax_law_v2"
     depends_on:
+      postgres:
+        condition: service_healthy
+      tax-search:
+        condition: service_healthy
       langflow:
         condition: service_healthy
       qdrant:

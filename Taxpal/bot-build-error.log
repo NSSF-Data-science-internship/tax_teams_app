@@ -1,0 +1,5 @@
+--progress is a global compose flag, better use `docker compose --progress xx build ...
+ Image taxpal-tax-search Building 
+ Image taxpal-langflow Building 
+ Image taxpal-taxpal-bot Building 
+ Image taxpal-taxpal-bot Built 

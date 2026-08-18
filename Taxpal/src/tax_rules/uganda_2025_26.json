@@ -1,0 +1,30 @@
+{
+  "jurisdiction": "Uganda",
+  "tax_year": "2025/26",
+  "version": "UG-2025-26-v1",
+  "effective_from": "2025-07-01",
+  "effective_to": "2026-06-30",
+  "verified_on": "2026-08-16",
+  "sources": {
+    "vat": {"label": "Value Added Tax (Rate of Tax) Order, 2005", "url": "https://ura.go.ug/en/value-added-tax/"},
+    "paye": {"label": "Uganda Revenue Authority PAYE rates", "url": "https://ura.go.ug/en/domestic-taxes/paye-rates/"},
+    "rental": {"label": "Uganda Revenue Authority rental income tax guidance", "url": "https://ura.go.ug/en/rental-income-tax-2/"},
+    "income": {"label": "Uganda Revenue Authority income tax guidance", "url": "https://ura.go.ug/en/ask-ura-commissioner-general-6/"},
+    "wht_goods_services": {"label": "URA withholding tax guide FY 2024/25", "url": "https://ura.go.ug/wp-content/uploads/2024/12/Withholding-Tax-FY-2024-25.pdf"},
+    "wht_rent": {"label": "URA real-estate withholding guidance", "url": "https://ura.go.ug/en/landlords-2/"},
+    "wht_nonresident": {"label": "URA withholding tax guide FY 2024/25", "url": "https://ura.go.ug/wp-content/uploads/2024/12/Withholding-Tax-FY-2024-25.pdf"}
+  },
+  "vat": {"standard_rate": "18"},
+  "individual_income_monthly": {
+    "resident": {"thresholds": ["235000", "335000", "410000", "10000000"], "rates": ["0", "10", "20", "30"], "bases": ["0", "0", "10000", "25000"], "surcharge_rate": "10"},
+    "non_resident": {"thresholds": ["0", "335000", "410000", "10000000"], "rates": ["10", "10", "20", "30"], "bases": ["0", "0", "33500", "48500"], "surcharge_rate": "10"}
+  },
+  "rental": {"resident_individual_threshold": "2820000", "resident_individual_rate": "12", "non_resident_individual_rate": "15", "company_rate": "30", "company_expense_cap_percent": "50"},
+  "corporate": {"rate": "30"},
+  "withholding": {
+    "resident goods/services above ugx 1m": {"rate": "6", "minimum_exclusive": "1000000", "source": "wht_goods_services"},
+    "rent above ugx 1m": {"rate": "6", "minimum_exclusive": "1000000", "source": "wht_rent"},
+    "non-resident services": {"rate": "15", "source": "wht_nonresident"},
+    "non-resident dividend/interest/royalty": {"rate": "15", "source": "wht_nonresident"}
+  }
+}

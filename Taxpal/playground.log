@@ -1,0 +1,3 @@
+Telemetry: agents-playground-cli/serverStart {"cleanProperties":{"options":"{\"configFileOptions\":{\"path\":\"<REDACTED: user-file-path>\"},\"appConfig\":{},\"port\":56150,\"debugConfig\":{\"eventsRecordingEnabled\":false},\"disableTelemetry\":false}"}}
+
+Listening on 56150

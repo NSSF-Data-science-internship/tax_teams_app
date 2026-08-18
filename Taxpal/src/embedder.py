@@ -142,6 +142,10 @@ def embed_and_store(chunks: list[dict]):
                         "chunk_index",
                         0
                     ),
+                    "evidence_type": "local_document",
+                    "publication_date": chunk.get("publication_date", ""),
+                    "effective_from": chunk.get("effective_from", ""),
+                    "effective_to": chunk.get("effective_to", ""),
                 },
             )
 

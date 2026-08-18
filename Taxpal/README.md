@@ -11,6 +11,7 @@ The project currently supports:
 - Multi-turn conversation memory with contextual follow-up rewriting.
 - PostgreSQL-backed conversation history for Streamlit sessions and Teams conversations.
 - Allowlisted live-web fallback for current or weakly supported questions.
+- A deterministic conversational VAT calculator shared by Streamlit and Teams.
 - A FastAPI tax-law search service.
 - A scrape, parse, embed, and store ingestion pipeline.
 
@@ -92,6 +93,11 @@ Taxpal/
 │   ├── conversation.py         Multi-turn orchestration and retrieval decisions
 │   ├── conversation_store.py   PostgreSQL conversation persistence
 │   ├── trusted_web.py          Allowlisted live official-source fallback
+│   ├── evidence.py             Citation register, validation, and confidence checks
+│   ├── user_memory.py          Consent commands and validated profile extraction
+│   ├── tax_calculator.py       Decimal-based statutory calculations and intent parsing
+│   ├── tax_rules.py            Validated loader for effective-dated rule packs
+│   ├── tax_rules/              Versioned Uganda financial-year JSON rules
 │   ├── test_taxpal.py          End-to-end CLI flow test
 │   └── taxpal_dashboard.py     Streamlit flow dashboard
 ├── docker-compose.yml          Local service orchestration
@@ -244,8 +250,93 @@ The conversational dashboard displays:
 - The standalone query generated from each follow-up.
 - Whether evidence was freshly retrieved or reused.
 - Whether trusted official web evidence was added or the fallback was unavailable.
+- VAT calculation breakdowns that bypass LLM arithmetic.
 
-The dashboard creates a session identifier in the `?session=` query parameter. Refreshing or reopening that URL reloads the stored conversation. Treat the session URL as private until user authentication is added.
+The local dashboard keeps an opaque user and conversation identifier in Streamlit session state. It no longer accepts a session identifier from the URL, preventing someone from opening another tester session by copying or changing a query parameter. This tester identity is intentionally temporary; production web deployment still requires an identity provider.
+
+Teams history is namespaced by tenant, authenticated Teams user, and conversation. Every database load, save, and delete is constrained by the stored owner and channel, and an existing session can no longer be reassigned to a different owner.
+
+Set `TAXPAL_ENV=production` in deployed environments. In production mode the bot refuses to start unless `CLIENT_ID` is configured, preventing accidental deployment with Teams authentication disabled. Local development defaults to `development` so emulator testing can still run without registration.
+
+Microsoft 365 Agents Playground uses `TAXPAL_PLAYGROUND=true` to accept mocked unsigned activities during local development. This setting is included in `m365agents.playground.yml`; the application refuses to start if Playground mode is combined with `TAXPAL_ENV=production`.
+
+## Tap-first tax calculator
+
+The Streamlit dashboard includes a visible calculator form with these modes:
+
+- **VAT** — verified 18% default with inclusive/exclusive handling.
+- **PAYE** — monthly resident and non-resident progressive bands.
+- **Rental income** — resident individual, non-resident individual, and company rules.
+- **Withholding tax** — selected verified categories with threshold checks.
+- **Corporate income** — 30% of annual chargeable income.
+- **Individual business income** — annual resident and non-resident progressive bands.
+- **Custom percentage** — the user supplies both the label and flat rate.
+
+Submitting the form creates a normal conversation turn, so results are displayed in chat, saved in history, and use the same calculation engine as Teams. TaxPal also recognizes typed calculations before document retrieval or LLM generation. Examples:
+
+```text
+Calculate VAT on UGX 1,000,000
+What is the VAT component of UGX 590,000 inclusive?
+Calculate VAT on UGX 200,000 at 16%
+Calculate 6% withholding tax on UGX 500,000
+```
+
+The statutory calculator asks for chargeable income where the law requires it. It does not derive allowable deductions from raw revenue. Results include a direct URA rule link and the date on which the online guidance was verified. Withholding calculations require an explicit payment category and still depend on the payer's withholding obligation, exemptions, and any applicable treaty.
+
+The default standard rate is 18%, based on the project’s ingested Value Added Tax (Rate of Tax) Order, 2005. The calculation uses Python `Decimal` arithmetic and rounds monetary values to two decimal places.
+
+- VAT-exclusive: `VAT = net amount × rate / 100`
+- VAT-inclusive component: `VAT = gross amount × rate / (100 + rate)`
+
+An explicitly supplied custom percentage is labelled as a user-specified rate rather than an official standard rate. It reports the percentage amount without assuming whether that amount should be added, withheld, or deducted. The calculator provides general information and does not determine whether a particular supply is taxable, exempt, or zero-rated.
+
+The rule set was verified against current URA guidance on 16 August 2026. Tax law can change, so the verification date and source links must be reviewed when a new financial year or amendment takes effect.
+
+### Versioned tax years
+
+Statutory values are stored outside the Python calculation engine:
+
+```text
+src/tax_rules/
+├── uganda_2025_26.json
+└── uganda_2026_27.json
+```
+
+Each rule pack records its financial year, effective dates, immutable version identifier, verification date, source links, rates, bands, thresholds, and caps. The dashboard tax-year selector defaults to `2026/27`; typed chat and Teams requests can select a supported year with phrases such as `for tax year 2025/26` or `FY 2025-26`.
+
+Every statutory result stores and displays `tax_year`, `rule_version`, `effective_from`, `effective_to`, and `verified_on`. Unsupported years are rejected instead of being calculated with another year's rules. To introduce a new year, add and review a new JSON pack rather than modifying a historical pack that may already be referenced by saved calculations.
+
+## Evidence and citation controls
+
+Retrieved documents receive deterministic citation identifiers (`[S1]`, `[S2]`, and so on) before generation. The LLM may cite only those identifiers after factual claims. TaxPal independently validates the identifiers and appends a structured source register, so model-generated URLs are not treated as authoritative.
+
+Each citation records its title, section, publisher, URL, evidence origin, relevance score, and publication, effective, or access dates where available. The evidence assessment reports:
+
+- High, moderate, or low confidence.
+- Missing claim-level citation markers or unknown identifiers.
+- Missing source dates or sources outside their effective period.
+- Conflicts when sources provide the same structured `claim_key` with differing `claim_value` metadata.
+
+The Streamlit evidence table displays this provenance. Teams receives the same answer with its source register appended. Confidence is an evidence-quality signal, not a guarantee that tax advice is correct.
+
+## Consent-based conversation memory
+
+Remembered profile data is separate from chat history and is stored per authenticated owner and channel. TaxPal remembers nothing until the user opts in. The allowed profile is deliberately limited to residency, taxpayer type, preferred tax year, frequent tax, and business sector; values are validated server-side and must be explicitly stated or saved through the dashboard.
+
+Teams memory commands include:
+
+```text
+Remember my tax profile
+I am a non-resident
+My taxpayer type is company
+My preferred tax year is 2025/26
+I usually calculate VAT
+My business sector is hospitality
+Show my profile
+Forget my profile
+```
+
+The Streamlit sidebar provides equivalent opt-in, view, update, and confirmed-delete controls. Clearing conversation history does not delete the remembered profile, and deleting the profile does not delete conversation history. Remembered values personalize explanations only: TaxPal is instructed to reconfirm facts that determine residency, liability, exemptions, or calculator inputs.
 
 ## Trusted live sources
 
@@ -353,7 +444,7 @@ Run the isolated conversation, trust-policy, and scraper unit tests from `Taxpal
 
 ```powershell
 $env:PYTHONIOENCODING="utf-8"
-.\.venv\Scripts\python.exe -m unittest test_scraper.py test_conversation.py test_trusted_web.py
+.\.venv\Scripts\python.exe -m unittest test_scraper.py test_conversation.py test_trusted_web.py test_tax_calculator.py
 ```
 
 Notes:
@@ -363,6 +454,7 @@ Notes:
 - `test_scraper.py` is the small isolated unit test.
 - `test_conversation.py` verifies conversational replies and evidence reuse without calling external services.
 - `test_trusted_web.py` verifies domain rejection, current-query routing, and relevance thresholds without calling external services.
+- `test_tax_calculator.py` verifies inclusive/exclusive VAT, custom rates, input validation, and conversational parsing.
 - Do not use broad unittest discovery yet because the two integration scripts execute external work when imported.
 
 ## Troubleshooting
@@ -438,7 +530,7 @@ docker exec taxpal-postgres psql -U taxpal -d taxpal -c "SELECT count(*) FROM la
 - The answer generator does not yet emit structured citations linking every claim to a specific retrieved chunk.
 - Retrieval quality has no automated evaluation dataset or relevance metrics yet.
 - The Teams Docker service needs provider secrets injected at runtime.
-- Streamlit history links are identifiers, not authenticated accounts. Production deployment requires real sign-in and authorization checks before exposing stored history.
+- The Streamlit dashboard is a local tester, not an authenticated production portal. Add Microsoft Entra ID or another identity provider before exposing it publicly.
 - Trusted web evidence currently depends on Gemini grounding quota and availability.
 - Langflow and Qdrant remain in Compose even though the current production path uses FastAPI and pgvector.
 - Several integration scripts perform work during import and should eventually be converted into isolated tests.

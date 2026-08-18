@@ -44,6 +44,12 @@ async def search_tax_law(
             last_error = exc
             if attempt < TAX_SEARCH_RETRIES:
                 await asyncio.sleep(2 ** (attempt - 1))
+        except httpx.HTTPStatusError as exc:
+            if exc.response.status_code < 500:
+                raise
+            last_error = exc
+            if attempt < TAX_SEARCH_RETRIES:
+                await asyncio.sleep(2 ** (attempt - 1))
 
     raise TaxSearchUnavailable(
         "The tax-law search service is still starting or temporarily "

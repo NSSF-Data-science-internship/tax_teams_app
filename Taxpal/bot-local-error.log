@@ -1,0 +1,6 @@
+C:\Users\ekica\Documents\Tax Assistant\tax_teams_app\Taxpal\src\.venv\Lib\site-packages\microsoft_teams\apps\utils\html_widget.py:44: ExperimentalWarning: HtmlWidgetSecurityPolicy is in preview and may change in the future. Diagnostic: ExperimentalTeamsHtmlWidget
+  DEFAULT_SECURITY_POLICY = HtmlWidgetSecurityPolicy(
+INFO:     Started server process [1132]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:3978 (Press CTRL+C to quit)

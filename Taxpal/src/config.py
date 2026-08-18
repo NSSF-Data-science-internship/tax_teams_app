@@ -12,6 +12,10 @@ class Config:
     APP_PASSWORD = os.environ.get("CLIENT_SECRET", "")
     APP_TYPE = os.environ.get("BOT_TYPE", "")
     APP_TENANTID = os.environ.get("TENANT_ID", "")
+    ENVIRONMENT = os.environ.get("TAXPAL_ENV", "development").strip().lower()
+    PLAYGROUND_MODE = os.environ.get("TAXPAL_PLAYGROUND", "false").strip().lower() in {
+        "1", "true", "yes", "on"
+    }
     AZURE_OPENAI_API_KEY = os.environ.get("AZURE_OPENAI_API_KEY", "") # Azure OpenAI API key
     AZURE_OPENAI_DEPLOYMENT_NAME = os.environ.get("AZURE_OPENAI_DEPLOYMENT_NAME", "") # Azure OpenAI model deployment name
     AZURE_OPENAI_ENDPOINT = os.environ.get("AZURE_OPENAI_ENDPOINT", "") # Azure OpenAI endpoint

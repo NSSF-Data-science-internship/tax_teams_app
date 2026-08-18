@@ -1,0 +1,8 @@
+C:\Users\ekica\Documents\Tax Assistant\tax_teams_app\Taxpal\src\.venv\Lib\site-packages\microsoft_teams\apps\utils\html_widget.py:44: ExperimentalWarning: HtmlWidgetSecurityPolicy is in preview and may change in the future. Diagnostic: ExperimentalTeamsHtmlWidget
+  DEFAULT_SECURITY_POLICY = HtmlWidgetSecurityPolicy(
+INFO:     Started server process [36828]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+ERROR:    [Errno 10048] error while attempting to bind on address ('0.0.0.0', 3978): [winerror 10048] only one usage of each socket address (protocol/network address/port) is normally permitted
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
