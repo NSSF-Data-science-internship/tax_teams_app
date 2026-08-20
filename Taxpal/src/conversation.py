@@ -158,7 +158,7 @@ async def run_conversation_turn(
             try:
                 web_documents = await asyncio.to_thread(
                     search_trusted_web,
-                    search_query,
+                    question,
                 )
                 documents = documents + web_documents
             except Exception as exc:

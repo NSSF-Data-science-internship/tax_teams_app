@@ -14,6 +14,7 @@ from microsoft_teams.api import (
 
 from config import Config
 #from langflow_client import LangflowClient
+from cards import build_taxpal_card_message
 from conversation import run_conversation_turn
 from tax_search_client import TaxSearchUnavailable
 from conversation_store import (
@@ -236,11 +237,12 @@ async def handle_message(
         except Exception as exc:
             print(f"Persistent history save failed: {exc}")
 
-        await ctx.send(
-            MessageActivityInput(
-                text=result["answer"]
-            )
-        )
+        try:
+            response = build_taxpal_card_message(result)
+        except Exception as exc:
+            print(f"Adaptive Card build failed; sending text fallback: {exc}")
+            response = MessageActivityInput(text=result["answer"])
+        await ctx.send(response)
 
     except TaxSearchUnavailable as exc:
         print(

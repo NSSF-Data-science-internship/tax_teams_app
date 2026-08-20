@@ -352,9 +352,12 @@ TaxPal triggers live search when:
 
 - No local documents are returned.
 - Scored local evidence is below `WEB_RELEVANCE_THRESHOLD`.
+- The user supplies an HTTPS URL on an allowlisted official domain.
 - The question contains a current-information request such as “latest,” “recent,” “today,” or “check official sources.”
 
-Only grounding citations identified as an approved domain enter the final evidence set. Each accepted web source is labelled `trusted_web` and records its organization, URL, domain, and access time. An unavailable or quota-limited web search does not prevent a local-document answer.
+Explicit official URLs are fetched directly without consuming Gemini grounding quota. Direct retrieval requires HTTPS, validates every redirect against the allowlist, rejects embedded credentials and nonstandard ports, limits download and extracted-text sizes, and accepts HTML, plain text, or PDF content. Scripts, forms, navigation, and other non-evidence HTML are removed before generation.
+
+For search-based discovery, only grounding citations identified as an approved domain and delivered through an approved HTTPS URL or Google grounding redirect enter the final evidence set. Each accepted source is labelled `trusted_web` and records its organization, URL, canonical domain, access time, and transport-security decision. An unavailable or quota-limited web search does not prevent a local-document answer.
 
 ## Ingest or refresh tax-law data
 
@@ -390,7 +393,28 @@ Individual stages are also available:
 
 `--embed-only` reads `data/chunks/all_chunks.json`. Host-side ingestion connects to PostgreSQL through port `15432`; the Dockerized search API connects internally through port `5432`.
 
-## Run the Teams bot
+## Open Microsoft 365 Agents Playground
+
+On Windows, double-click `start-taxpal-playground.cmd` in the `Taxpal` folder. The launcher automatically:
+
+- starts Docker Desktop when needed;
+- starts PostgreSQL and the tax-search service;
+- starts the TaxPal bot on port `3978`;
+- starts Microsoft 365 Agents Playground on port `56150`; and
+- opens `http://localhost:56150` in the default browser.
+
+Keep the terminal window open while the launcher performs its checks. When you finish, double-click `stop-taxpal-playground.cmd`. This stops the bot and Playground processes started by the launcher; the Docker services remain running so the next launch is faster.
+
+If a launch fails, inspect the text files in `Taxpal/.runtime`. They contain separate bot and Playground output and error logs. The generated `.runtime` folder is ignored by Git.
+
+The same commands can be run from a terminal:
+
+```powershell
+.\start-taxpal-playground.cmd
+.\stop-taxpal-playground.cmd
+```
+
+## Run only the Teams bot
 
 For local Python execution, ensure PostgreSQL and `tax-search` are running, then run from `Taxpal/src`:
 

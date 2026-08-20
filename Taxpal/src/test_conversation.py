@@ -96,18 +96,18 @@ class ConversationTests(unittest.IsolatedAsyncioTestCase):
 
     async def test_rag_answer_has_validated_structured_citations(self):
         documents = [{
-            "text": "The standard rate is 18 percent.",
+            "text": "A VAT-registered taxpayer must retain supporting tax records.",
             "metadata": {
-                "title": "VAT guidance", "section": "Standard rate",
+                "title": "VAT guidance", "section": "Record keeping",
                 "source": "URA", "url": "https://ura.go.ug/vat",
                 "evidence_type": "local_document", "publication_date": "2026-01-01",
                 "relevance_score": 0.9,
             },
         }]
-        with patch("conversation.rewrite_question_for_retrieval", return_value="VAT rate"), patch(
+        with patch("conversation.rewrite_question_for_retrieval", return_value="VAT record keeping"), patch(
             "conversation.search_tax_law", new=AsyncMock(return_value=documents)
-        ), patch("conversation.answer_tax_question", return_value="The rate is 18% [S1]."):
-            result = await run_conversation_turn("What is the VAT rate?", history=[])
+        ), patch("conversation.answer_tax_question", return_value="Supporting records must be kept [S1]."):
+            result = await run_conversation_turn("What VAT records must a taxpayer keep?", history=[])
 
         self.assertEqual(result["citations"][0]["id"], "S1")
         self.assertEqual(result["evidence_assessment"]["confidence"], "high")

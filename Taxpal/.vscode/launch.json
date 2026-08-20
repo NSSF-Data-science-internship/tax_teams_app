@@ -62,7 +62,12 @@
       "request": "launch",
       "program": "${workspaceFolder}/src/app.py",
       "cwd": "${workspaceFolder}/src",
-      "console": "integratedTerminal"
+      "console": "integratedTerminal",
+      "serverReadyAction": {
+        "pattern": "Uvicorn running on (https?://\\S+)",
+        "action": "startDebugging",
+        "name": "Start Microsoft 365 Agents Playground"
+      }
     },
     {
       "name": "Start Python (Playground)",
@@ -70,12 +75,7 @@
       "request": "launch",
       "program": "${workspaceFolder}/src/app.py",
       "cwd": "${workspaceFolder}/src",
-      "console": "integratedTerminal",
-      "serverReadyAction": {
-        "pattern": "(started|listening|Running|Serving) (at|on) (https?://\\S+)",
-        "action": "startDebugging",
-        "name": "Start Microsoft 365 Agents Playground"
-      }
+      "console": "integratedTerminal"
     },
     {
         "name": "Start Microsoft 365 Agents Playground",
@@ -83,7 +83,13 @@
         "request": "launch",
         "program": "${workspaceFolder}/devTools/playground/node_modules/@microsoft/m365agentsplayground/cli.js",
         "args": [
-            "start"
+            "start",
+            "--app-endpoint",
+            "http://127.0.0.1:3978/api/messages",
+            "--channel-id",
+            "msteams",
+            "--port",
+            "56150"
         ],
         "env": {
           "PATH": "${workspaceFolder}/devTools/nodejs;${env:PATH}"
@@ -127,8 +133,8 @@
       "stopAll": true
     },
     {
-        "name": "Debug in Microsoft 365 Agents Playground",
-        "configurations": ["Start Python (Playground)"],
+      "name": "Debug in Microsoft 365 Agents Playground",
+      "configurations": ["Start Python (Playground)"],
         "preLaunchTask": "Deploy (Microsoft 365 Agents Playground)",
         "presentation": {
             "group": "0-TestTool",
