@@ -1,6 +1,6 @@
 # TaxPal
 
-TaxPal is a retrieval-augmented generation (RAG) assistant for Ugandan tax-law questions. It retrieves relevant passages from a local PostgreSQL/pgvector knowledge base and asks a configured language model to answer using only that evidence.
+TaxPal is a retrieval-augmented generation (RAG) assistant for Ugandan tax-law questions. It retrieves relevant passages from a Chroma vector database and asks a configured language model to answer using that evidence. PostgreSQL separately stores conversation history and opted-in user memory.
 
 The project currently supports:
 
@@ -30,8 +30,8 @@ flowchart LR
     TEST --> CLIENT
     CLIENT --> API[FastAPI tax-search service]
     API --> EMB[BGE-M3 query embedding]
-    EMB --> PG[(PostgreSQL + pgvector)]
-    PG --> DOCS[Relevant tax-law chunks]
+    EMB --> CHROMA[(Chroma)]
+    CHROMA --> DOCS[Relevant tax-law chunks]
     DOCS --> CHECK{Evidence sufficient?}
     CHECK -->|No or current question| WEB[Trusted official web search]
     CHECK -->|Yes| LLM
@@ -50,7 +50,7 @@ For each question:
 3. A context-dependent follow-up is rewritten into a standalone search question.
 4. `tax_search_client.py` calls `POST /search-tax-law` on the FastAPI service.
 5. The service embeds the rewritten question with BGE-M3.
-6. pgvector returns the most similar tax-law chunks.
+6. Chroma returns the most similar tax-law chunks.
 7. `llm_client.py` builds a prompt containing recent history, the current question, and retrieved evidence.
 8. Gemini or Azure OpenAI generates a grounded conversational answer.
 9. The interface stores the turn and displays the answer. Requests such as “explain that more simply” reuse the previous evidence instead of searching again.
@@ -61,7 +61,8 @@ When local evidence is missing, scores below the configured threshold, or the us
 
 | Service | Port | Role | Current answer path |
 | --- | ---: | --- | --- |
-| PostgreSQL + pgvector | `15432` on host, `5432` in Docker | Stores tax-law embeddings and metadata | Required |
+| Chroma | `8000` | Stores tax-law embeddings and metadata | Required |
+| PostgreSQL | `15432` on host, `5432` in Docker | Stores conversation history and opted-in user memory | Required for persistence |
 | Tax search API | `8001` | Embeds queries and performs similarity search | Required |
 | Teams bot | `3978` | Microsoft Teams interface | Optional interface |
 | Streamlit | `8501` | Local flow-testing dashboard | Optional interface |
@@ -85,7 +86,7 @@ Taxpal/
 │   ├── app.py                  Microsoft Teams bot
 │   ├── scraper.py              Downloads tax-law sources
 │   ├── parser.py               Extracts and chunks document text
-│   ├── embedder.py             BGE-M3 embeddings and pgvector storage
+│   ├── embedder.py             BGE-M3 embeddings and Chroma storage
 │   ├── ingest.py               Ingestion pipeline entry point
 │   ├── tax_search_api.py       FastAPI retrieval service
 │   ├── tax_search_client.py    Async client for the retrieval API
@@ -141,13 +142,15 @@ The Azure deployment must support chat completions. A realtime-only deployment s
 
 ```dotenv
 TAX_SEARCH_URL=http://127.0.0.1:8001
+CHROMA_HOST=127.0.0.1
+CHROMA_PORT=8000
+CHROMA_COLLECTION=uganda_tax_law
 POSTGRES_HOST=localhost
 POSTGRES_PORT=15432
-PGVECTOR_COLLECTION=uganda_tax_law
 WEB_RELEVANCE_THRESHOLD=0.35
 ```
 
-`CONVERSATION_DATABASE_URL` can override the history database connection. By default, history uses the same PostgreSQL instance as pgvector but stores data in a separate `taxpal_conversations` schema.
+`CONVERSATION_DATABASE_URL` can override the history database connection. PostgreSQL is not used for document vectors after the Chroma migration.
 
 Environment variables exported in the shell take priority. Otherwise, `llm_client.py` loads `env/.env.local` and then `env/.env`.
 
@@ -177,7 +180,7 @@ Create or update `env/.env.local` with one of the provider configurations above.
 To start only the services required by the active local RAG flow:
 
 ```powershell
-docker compose up -d postgres tax-search
+docker compose up -d chroma postgres tax-search
 ```
 
 To start the complete repository stack, including optional Langflow, Qdrant, and the Teams bot:
@@ -208,7 +211,7 @@ Invoke-RestMethod http://localhost:8001/health
 Expected response:
 
 ```json
-{"status":"ok","service":"tax-search"}
+{"status":"ok","service":"tax-search","vector_store":"chroma","collection":"uganda_tax_law","document_count":2700}
 ```
 
 ## Run the end-to-end test
@@ -306,9 +309,9 @@ Each rule pack records its financial year, effective dates, immutable version id
 
 Every statutory result stores and displays `tax_year`, `rule_version`, `effective_from`, `effective_to`, and `verified_on`. Unsupported years are rejected instead of being calculated with another year's rules. To introduce a new year, add and review a new JSON pack rather than modifying a historical pack that may already be referenced by saved calculations.
 
-## Evidence and citation controls
+## Evidence and source controls
 
-Retrieved documents receive deterministic citation identifiers (`[S1]`, `[S2]`, and so on) before generation. The LLM may cite only those identifiers after factual claims. TaxPal independently validates the identifiers and appends a structured source register, so model-generated URLs are not treated as authoritative.
+Retrieved documents receive deterministic identifiers (`[S1]`, `[S2]`, and so on) internally. TaxPal validates grounding with those markers and removes them before displaying the answer. Users see a concise **Based on** list instead of technical IDs or section-heavy citations.
 
 Each citation records its title, section, publisher, URL, evidence origin, relevance score, and publication, effective, or access dates where available. The evidence assessment reports:
 
@@ -365,13 +368,13 @@ flowchart LR
     S[Scrape HTML/PDF sources] --> P[Parse and clean text]
     P --> C[Split into overlapping chunks]
     C --> E[Create BGE-M3 embeddings]
-    E --> V[(PostgreSQL + pgvector)]
+    E --> V[(Chroma)]
 ```
 
-Start PostgreSQL first:
+Start Chroma first:
 
 ```powershell
-docker compose up -d postgres
+docker compose up -d chroma
 ```
 
 Then run the complete pipeline from `Taxpal/src`:
@@ -388,7 +391,7 @@ Individual stages are also available:
 .\.venv\Scripts\python.exe ingest.py --embed-only
 ```
 
-`--embed-only` reads `data/chunks/all_chunks.json`. Host-side ingestion connects to PostgreSQL through port `15432`; the Dockerized search API connects internally through port `5432`.
+`--embed-only` reads `data/chunks/all_chunks.json`. Host-side ingestion connects to Chroma at `127.0.0.1:8000`; the Dockerized search API connects to `chroma:8000`.
 
 ## Run the Teams bot
 
@@ -401,7 +404,7 @@ $env:TAX_SEARCH_URL="http://localhost:8001"
 
 The bot listens on port `3978`. Use Microsoft 365 Agents Toolkit debugging to register and open it in Teams.
 
-Important: the current Compose definition does not inject `env/.env.local` into the `taxpal-bot` container. Running the bot inside Docker therefore requires adding the selected provider variables to the Compose service through an `env_file` or explicit `environment` entries. Do not bake API keys into an image or commit them to `docker-compose.yml`.
+The Compose bot reads provider secrets from `env/.env.local`; never bake API keys into an image or commit that file. For Microsoft 365 Agents Playground testing, run the bot on the Windows host so it can call back to the host Playground service.
 
 ## API reference
 
@@ -450,7 +453,7 @@ $env:PYTHONIOENCODING="utf-8"
 Notes:
 
 - `test_taxpal.py` is an end-to-end executable test and makes a real LLM request; run it separately as documented above.
-- `test_pgvector.py` is currently an executable integration script rather than an isolated unit test; importing it loads BGE-M3 and connects to PostgreSQL.
+- `test_chroma.py` is an executable integration script; importing it loads BGE-M3 and connects to Chroma.
 - `test_scraper.py` is the small isolated unit test.
 - `test_conversation.py` verifies conversational replies and evidence reuse without calling external services.
 - `test_trusted_web.py` verifies domain rejection, current-query routing, and relevance thresholds without calling external services.
@@ -490,30 +493,33 @@ The API key has exhausted its current grounding/search quota. Local retrieval re
 
 The configured deployment does not support the Chat Completions call. Use a chat-capable Azure OpenAI deployment rather than a realtime-only model.
 
-### Tax search cannot resolve `{POSTGRES_HOST}`
+### Tax search cannot connect to Chroma
 
 The running Docker image is stale. Rebuild it:
 
 ```powershell
-docker compose build --no-cache tax-search
+docker compose up -d chroma
+docker compose build tax-search
 docker compose up -d tax-search
 ```
 
-### Host can connect but containers cannot connect to PostgreSQL
+### Host can connect but containers cannot connect to Chroma
 
-- Host programs use `localhost:15432`.
-- Compose services use `postgres:5432`.
+- Host programs use `127.0.0.1:8000`.
+- Compose services use `chroma:8000`.
 
 ### `RemoteProtocolError: Server disconnected without sending a response`
 
 First confirm `http://127.0.0.1:8001/health` responds. BGE-M3 can take several minutes to download and warm up after the first build. Host-side Python should use `TAX_SEARCH_URL=http://127.0.0.1:8001`; on some Windows/Docker configurations, `localhost` resolves through an unreliable IPv6 or proxy path. The client retries transient transport errors and ignores ambient proxy variables for this local service.
 
-### Search returns a pgvector schema error
+### Chroma collection is empty
 
-Do not delete the database volume immediately. Inspect the existing table and preserve indexed data before migrating or recreating the schema:
+Re-ingest the saved chunk export without re-scraping sources:
 
 ```powershell
-docker exec taxpal-postgres psql -U taxpal -d taxpal -c "SELECT count(*) FROM langchain_pg_embedding;"
+docker compose up -d chroma
+cd src
+.\.venv\Scripts\python.exe ingest.py --embed-only
 ```
 
 ## Security and data quality
@@ -532,5 +538,6 @@ docker exec taxpal-postgres psql -U taxpal -d taxpal -c "SELECT count(*) FROM la
 - The Teams Docker service needs provider secrets injected at runtime.
 - The Streamlit dashboard is a local tester, not an authenticated production portal. Add Microsoft Entra ID or another identity provider before exposing it publicly.
 - Trusted web evidence currently depends on Gemini grounding quota and availability.
-- Langflow and Qdrant remain in Compose even though the current production path uses FastAPI and pgvector.
+- The local Chroma server has no authentication and must not be exposed publicly without network controls and authentication.
+- Langflow and Qdrant remain in Compose as earlier experimental services; the active retrieval path uses FastAPI and Chroma.
 - Several integration scripts perform work during import and should eventually be converted into isolated tests.

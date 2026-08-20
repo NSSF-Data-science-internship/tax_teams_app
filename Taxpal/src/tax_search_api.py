@@ -3,11 +3,11 @@ from pydantic import BaseModel
 
 from embedder import (
     BGEM3Embeddings,
-    POSTGRES_CONNECTION,
     COLLECTION_NAME,
+    CHROMA_HOST,
+    CHROMA_PORT,
+    create_vector_store,
 )
-
-from langchain_postgres import PGVector
 
 
 app = FastAPI(
@@ -24,14 +24,9 @@ print("Loading BGE-M3 embeddings...")
 
 embeddings = BGEM3Embeddings()
 
-print("Connecting to PGVector...")
+print(f"Connecting to Chroma at {CHROMA_HOST}:{CHROMA_PORT}...")
 
-store = PGVector(
-    embeddings=embeddings,
-    collection_name=COLLECTION_NAME,
-    connection=POSTGRES_CONNECTION,
-    use_jsonb=True,
-)
+store = create_vector_store(embeddings)
 
 print("Tax search service ready.")
 
@@ -40,7 +35,10 @@ print("Tax search service ready.")
 def health():
     return {
         "status": "ok",
-        "service": "tax-search"
+        "service": "tax-search",
+        "vector_store": "chroma",
+        "collection": COLLECTION_NAME,
+        "document_count": store._collection.count(),
     }
 
 

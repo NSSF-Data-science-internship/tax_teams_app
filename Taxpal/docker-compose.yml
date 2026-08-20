@@ -1,4 +1,13 @@
 services:
+  chroma:
+    image: chromadb/chroma:1.5.9
+    container_name: taxpal-chroma
+    ports:
+      - "8000:8000"
+    volumes:
+      - chroma-data:/data
+    restart: unless-stopped
+
   qdrant:
     image: qdrant/qdrant:latest
     container_name: taxpal-qdrant
@@ -99,16 +108,17 @@ services:
       - "8001:8001"
 
     environment:
-      POSTGRES_HOST: "postgres"
-      POSTGRES_PORT: "5432"
+      CHROMA_HOST: "chroma"
+      CHROMA_PORT: "8000"
+      CHROMA_COLLECTION: "uganda_tax_law"
       HF_HOME: "/root/.cache/huggingface"
 
     volumes:
       - huggingface-cache:/root/.cache/huggingface
 
     depends_on:
-      postgres:
-        condition: service_healthy
+      chroma:
+        condition: service_started
 
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8001/health', timeout=5)"]
@@ -119,6 +129,7 @@ services:
 
     restart: unless-stopped
 volumes:
+  chroma-data:
   langflow-data:
   qdrant-data:
   postgres-data:

@@ -21,7 +21,7 @@ async def search_tax_law(
     k: int = 4,
 ) -> list[dict]:
     """
-    Search the TaxPal pgvector knowledge base.
+    Search the TaxPal Chroma knowledge base.
     """
 
     last_error = None

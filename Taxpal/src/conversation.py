@@ -26,11 +26,11 @@ def _simple_conversation_reply(question: str) -> str | None:
     normalized = " ".join(question.lower().strip().rstrip("!?.").split())
     if normalized in GREETING_WORDS:
         return (
-            "Hello! I’m TaxPal. I can help you understand Ugandan taxes and "
-            "tax laws. What would you like to know?"
+            "Hi! I’m TaxPal. What can I help you work through today—VAT, PAYE, "
+            "income tax, withholding tax, or something else?"
         )
     if normalized in THANKS_WORDS:
-        return "You’re welcome. Is there another Ugandan tax question I can help with?"
+        return "You’re welcome! If anything else comes up, just ask."
     return None
 
 

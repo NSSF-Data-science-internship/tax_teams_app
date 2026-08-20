@@ -15,6 +15,7 @@ __pycache__/
 .deployment/
 node_modules/
 devTools/*.log
+*.log
 
 # Dev tool directories
 /devTools/
