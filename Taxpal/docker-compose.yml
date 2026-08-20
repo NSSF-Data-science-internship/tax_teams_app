@@ -1,4 +1,15 @@
 services:
+  chroma:
+    image: chromadb/chroma:1.5.9
+    container_name: taxpal-chroma
+    ports:
+      # Port 8000 is commonly used by local FastAPI projects. TaxPal uses
+      # 18000 on the host while containers still connect to chroma:8000.
+      - "18000:8000"
+    volumes:
+      - chroma-data:/data
+    restart: unless-stopped
+
   qdrant:
     image: qdrant/qdrant:latest
     container_name: taxpal-qdrant
@@ -70,6 +81,9 @@ services:
       TAXPAL_ENV: "development"
       TAXPAL_PLAYGROUND: "true"
       TAX_SEARCH_URL: "http://tax-search:8001"
+      GRAPH_RAG_ENABLED: "true"
+      GRAPH_RAG_URL: "http://graph-search:8002"
+      GRAPH_RAG_MODE: "auto"
       POSTGRES_HOST: "postgres"
       POSTGRES_PORT: "5432"
       LANGFLOW_BASE_URL: "http://langflow:7860"
@@ -82,10 +96,36 @@ services:
         condition: service_healthy
       tax-search:
         condition: service_healthy
+      graph-search:
+        condition: service_started
       langflow:
         condition: service_healthy
       qdrant:
         condition: service_started
+    restart: unless-stopped
+
+  graph-search:
+    build:
+      context: .
+      dockerfile: Dockerfile.graph-search
+    container_name: taxpal-graph-search
+    env_file:
+      - ./env/.env.local
+    ports:
+      - "8002:8002"
+    environment:
+      GRAPH_RAG_ROOT: "/graph"
+      GRAPHRAG_COMPLETION_MODEL: "${GRAPHRAG_COMPLETION_MODEL:-gemini-2.5-flash-lite}"
+      GRAPHRAG_EMBEDDING_MODEL: "${GRAPHRAG_EMBEDDING_MODEL:-gemini-embedding-001}"
+      GRAPH_RAG_COMMUNITY_LEVEL: "2"
+    volumes:
+      - ./graphrag:/graph
+      - ./data/chunks:/data/chunks:ro
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8002/health', timeout=5)"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
     restart: unless-stopped
 
   tax-search:
@@ -99,16 +139,17 @@ services:
       - "8001:8001"
 
     environment:
-      POSTGRES_HOST: "postgres"
-      POSTGRES_PORT: "5432"
+      CHROMA_HOST: "chroma"
+      CHROMA_PORT: "8000"
+      CHROMA_COLLECTION: "uganda_tax_law"
       HF_HOME: "/root/.cache/huggingface"
 
     volumes:
       - huggingface-cache:/root/.cache/huggingface
 
     depends_on:
-      postgres:
-        condition: service_healthy
+      chroma:
+        condition: service_started
 
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8001/health', timeout=5)"]
@@ -119,6 +160,7 @@ services:
 
     restart: unless-stopped
 volumes:
+  chroma-data:
   langflow-data:
   qdrant-data:
   postgres-data:

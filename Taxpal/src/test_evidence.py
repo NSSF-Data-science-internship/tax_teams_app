@@ -36,7 +36,9 @@ class EvidenceTests(unittest.TestCase):
         }]
         assessment = assess_evidence("PAYE applies [S1].", citations)
         answer = append_source_register("PAYE applies [S1].", citations, assessment)
-        self.assertIn("**Sources**", answer)
+        self.assertIn("**Based on**", answer)
+        self.assertNotIn("[S1]", answer)
+        self.assertNotIn("PAYE", answer.split("**Based on**", 1)[1])
         self.assertIn("https://ura.go.ug/guide", answer)
 
 

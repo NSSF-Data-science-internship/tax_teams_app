@@ -89,19 +89,27 @@ def assess_evidence(answer: str, citations: list[dict]) -> dict[str, Any]:
 
 def append_source_register(answer: str, citations: list[dict], assessment: dict) -> str:
     if not citations:
-        return answer
-    lines = [answer.rstrip(), "", "**Sources**"]
+        return _remove_internal_source_markers(answer)
+    lines = [_remove_internal_source_markers(answer).rstrip(), "", "**Based on**"]
+    seen = set()
     for citation in citations:
         label = citation["title"]
-        if citation["section"]:
-            label += f" — {citation['section']}"
+        source_key = (label, citation["url"], citation["publisher"])
+        if source_key in seen:
+            continue
+        seen.add(source_key)
         if citation["url"]:
-            lines.append(f"- [{citation['id']}] [{label}]({citation['url']}) ({citation['publisher']})")
+            lines.append(f"- [{label}]({citation['url']}) — {citation['publisher']}")
         else:
-            lines.append(f"- [{citation['id']}] {label} ({citation['publisher']})")
-    if assessment["warnings"]:
-        lines.extend(["", f"**Evidence confidence:** {assessment['confidence'].title()}. " + " ".join(assessment["warnings"])])
+            lines.append(f"- {label} — {citation['publisher']}")
     return "\n".join(lines)
+
+
+def _remove_internal_source_markers(answer: str) -> str:
+    """Hide machine-readable evidence IDs from the user-facing response."""
+    cleaned = re.sub(r"\s*\[(?:S\d+)\]", "", answer)
+    cleaned = re.sub(r"[ \t]+([.,;:!?])", r"\1", cleaned)
+    return cleaned.strip()
 
 
 def calculation_citations(calculation: dict) -> list[dict]:

@@ -11,7 +11,8 @@ lxml
 pymupdf
 FlagEmbedding
 torch
-langchain-postgres
+chromadb==1.5.9
+langchain-chroma==1.1.0
 psycopg[binary]
 fastapi
 uvicorn

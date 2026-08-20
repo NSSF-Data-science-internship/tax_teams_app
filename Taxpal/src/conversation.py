@@ -3,6 +3,7 @@ import time
 from typing import Any
 
 from evidence import assess_evidence, append_source_register, build_citations, calculation_citations
+from graph_rag_client import choose_graph_search_method, search_graph_rag
 from llm_client import answer_tax_question, rewrite_question_for_retrieval
 from tax_search_client import TaxSearchUnavailable, search_tax_law
 from tax_calculator import format_tax_answer, parse_tax_request
@@ -26,11 +27,11 @@ def _simple_conversation_reply(question: str) -> str | None:
     normalized = " ".join(question.lower().strip().rstrip("!?.").split())
     if normalized in GREETING_WORDS:
         return (
-            "Hello! I’m TaxPal. I can help you understand Ugandan taxes and "
-            "tax laws. What would you like to know?"
+            "Hi! I’m TaxPal. What can I help you work through today—VAT, PAYE, "
+            "income tax, withholding tax, or something else?"
         )
     if normalized in THANKS_WORDS:
-        return "You’re welcome. Is there another Ugandan tax question I can help with?"
+        return "You’re welcome! If anything else comes up, just ask."
     return None
 
 
@@ -71,6 +72,10 @@ async def run_conversation_turn(
             "retrieval_reused": False,
             "rewrite_seconds": 0.0,
             "search_seconds": 0.0,
+            "graph_seconds": 0.0,
+            "graph_method": None,
+            "graph_fallback_used": False,
+            "graph_error": None,
             "generation_seconds": 0.0,
             "total_seconds": time.perf_counter() - started,
         }
@@ -90,6 +95,10 @@ async def run_conversation_turn(
             "calculator_used": True,
             "rewrite_seconds": 0.0,
             "search_seconds": 0.0,
+            "graph_seconds": 0.0,
+            "graph_method": None,
+            "graph_fallback_used": False,
+            "graph_error": None,
             "generation_seconds": 0.0,
             "web_seconds": 0.0,
             "web_fallback_used": False,
@@ -118,6 +127,10 @@ async def run_conversation_turn(
             "calculator_used": True,
             "rewrite_seconds": 0.0,
             "search_seconds": 0.0,
+            "graph_seconds": 0.0,
+            "graph_method": None,
+            "graph_fallback_used": False,
+            "graph_error": None,
             "generation_seconds": 0.0,
             "web_seconds": 0.0,
             "web_fallback_used": False,
@@ -127,6 +140,10 @@ async def run_conversation_turn(
 
     rewrite_seconds = 0.0
     search_seconds = 0.0
+    graph_seconds = 0.0
+    graph_error = None
+    graph_documents = []
+    graph_method = None
     web_seconds = 0.0
     web_error = None
     web_documents = []
@@ -152,6 +169,21 @@ async def run_conversation_turn(
             documents = []
             local_search_error = str(exc)
         search_seconds = time.perf_counter() - search_started
+
+        graph_method = choose_graph_search_method(f"{question}\n{search_query}")
+        if graph_method:
+            graph_started = time.perf_counter()
+            try:
+                graph_documents = await search_graph_rag(
+                    search_query,
+                    method=graph_method,
+                )
+                documents = documents + graph_documents
+            except Exception as exc:
+                # Graph retrieval is complementary. Vector and trusted-web RAG
+                # remain available whenever the index is absent or rebuilding.
+                graph_error = str(exc)
+            graph_seconds = time.perf_counter() - graph_started
 
         if should_search_web(question, documents):
             web_started = time.perf_counter()
@@ -196,6 +228,10 @@ async def run_conversation_turn(
         "retrieval_reused": retrieval_reused,
         "rewrite_seconds": rewrite_seconds,
         "search_seconds": search_seconds,
+        "graph_seconds": graph_seconds,
+        "graph_method": graph_method,
+        "graph_fallback_used": bool(graph_documents),
+        "graph_error": graph_error,
         "generation_seconds": generation_seconds,
         "web_seconds": web_seconds,
         "web_fallback_used": bool(web_documents),

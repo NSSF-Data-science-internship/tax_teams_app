@@ -63,6 +63,26 @@ function Wait-ForTaxSearch {
     throw "Tax-search did not become healthy. Run 'docker compose logs tax-search' for details."
 }
 
+function Wait-ForGraphSearch {
+    $deadline = (Get-Date).AddMinutes(5)
+    while ((Get-Date) -lt $deadline) {
+        try {
+            $health = Invoke-RestMethod -Uri "http://127.0.0.1:8002/health" -TimeoutSec 5
+            if ($health.status -eq "ok") {
+                if (-not $health.indexed) {
+                    Write-Host "      GraphRAG service is ready; build the index to enable graph retrieval." -ForegroundColor Yellow
+                }
+                return
+            }
+        }
+        catch {
+            # The GraphRAG image can take time to start after its first build.
+        }
+        Start-Sleep -Seconds 3
+    }
+    throw "GraphRAG search service did not become ready within five minutes."
+}
+
 New-Item -ItemType Directory -Force -Path $runtimeDir | Out-Null
 Set-Location $projectRoot
 
@@ -90,12 +110,13 @@ if ($LASTEXITCODE -ne 0) {
     }
 }
 
-Write-Host "[2/4] Starting PostgreSQL and tax-search..." -ForegroundColor Cyan
-& docker compose up -d postgres tax-search
+Write-Host "[2/4] Starting PostgreSQL, vector search, and graph search..." -ForegroundColor Cyan
+& docker compose up -d postgres tax-search graph-search
 if ($LASTEXITCODE -ne 0) {
     throw "Docker Compose could not start the required services."
 }
 Wait-ForTaxSearch
+Wait-ForGraphSearch
 
 $state = [ordered]@{ BotPid = $null; PlaygroundPid = $null; StartedAt = (Get-Date).ToString("o") }
 if (Test-Path $stateFile) {
@@ -117,6 +138,9 @@ else {
     $env:TAXPAL_ENV = "development"
     $env:TAXPAL_PLAYGROUND = "true"
     $env:TAX_SEARCH_URL = "http://127.0.0.1:8001"
+    $env:GRAPH_RAG_ENABLED = "true"
+    $env:GRAPH_RAG_URL = "http://127.0.0.1:8002"
+    $env:GRAPH_RAG_MODE = "auto"
     $bot = Start-Process `
         -FilePath $pythonPath `
         -ArgumentList @("app.py") `

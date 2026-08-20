@@ -15,7 +15,15 @@ __pycache__/
 .deployment/
 node_modules/
 devTools/*.log
+*.log
 
 # Dev tool directories
 /devTools/
 .runtime/
+
+# Generated GraphRAG artifacts (settings remain versioned)
+graphrag/input/
+graphrag/output/
+graphrag/update_output/
+graphrag/cache/
+graphrag/logs/

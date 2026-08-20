@@ -111,7 +111,45 @@ class ConversationTests(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(result["citations"][0]["id"], "S1")
         self.assertEqual(result["evidence_assessment"]["confidence"], "high")
-        self.assertIn("**Sources**", result["answer"])
+        self.assertIn("**Based on**", result["answer"])
+        self.assertNotIn("[S1]", result["answer"])
+
+    async def test_graph_rag_augments_vector_results_for_relationship_question(self):
+        vector_document = {
+            "text": "The VAT Act establishes input tax credits.",
+            "metadata": {"title": "VAT Act", "relevance_score": 0.9},
+        }
+        graph_document = {
+            "text": "The amendment changes how the credit rule applies.",
+            "metadata": {
+                "title": "TaxPal tax-law knowledge graph",
+                "source": "TaxPal GraphRAG index",
+                "evidence_type": "graph_rag",
+                "accessed_at": "2026-08-20T00:00:00+00:00",
+                "relevance_score": 0.85,
+            },
+        }
+        with patch(
+            "conversation.rewrite_question_for_retrieval",
+            return_value="How does the VAT amendment affect input tax credits?",
+        ), patch(
+            "conversation.search_tax_law", new=AsyncMock(return_value=[vector_document])
+        ), patch(
+            "conversation.choose_graph_search_method", return_value="local"
+        ), patch(
+            "conversation.search_graph_rag", new=AsyncMock(return_value=[graph_document])
+        ) as graph_search, patch(
+            "conversation.answer_tax_question", return_value="The amendment changes the rule [S1] [S2]."
+        ):
+            result = await run_conversation_turn(
+                "How does the VAT amendment affect input tax credits?", history=[]
+            )
+
+        graph_search.assert_awaited_once()
+        self.assertEqual(len(result["documents"]), 2)
+        self.assertTrue(result["graph_fallback_used"])
+        self.assertEqual(result["graph_method"], "local")
+        self.assertIsNone(result["graph_error"])
 
     async def test_consented_profile_is_passed_to_generation(self):
         documents = [{"text": "Evidence", "metadata": {"title": "Guide", "relevance_score": 0.9}}]

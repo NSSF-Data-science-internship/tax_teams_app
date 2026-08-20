@@ -18,7 +18,7 @@ DISCLAIMER = (
 
 def _answer_body(answer: str) -> str:
     """Return a clean user-facing answer while retaining citations in card metadata."""
-    body = answer.split("\n\n**Sources**", 1)[0].strip()
+    body = re.split(r"\n\n\*\*(?:Sources|Based on)\*\*", answer, maxsplit=1)[0].strip()
     body = re.sub(r"\s*\[S\d+\]", "", body, flags=re.IGNORECASE)
     return re.sub(r"\s+([.,;:!?])", r"\1", body).strip()
 
