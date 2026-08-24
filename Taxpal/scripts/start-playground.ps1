@@ -11,6 +11,11 @@ $botWorkingDir = Join-Path $projectRoot "src"
 $playgroundCli = Join-Path $projectRoot "devTools\playground\node_modules\@microsoft\m365agentsplayground\cli.js"
 $dockerDesktop = "C:\Program Files\Docker\Docker\Docker Desktop.exe"
 
+function Save-LauncherState {
+    param([System.Collections.IDictionary]$State)
+    $State | ConvertTo-Json | Set-Content -Path $stateFile -Encoding UTF8
+}
+
 function Test-TcpPort {
     param([int]$Port)
     $client = [System.Net.Sockets.TcpClient]::new()
@@ -23,6 +28,18 @@ function Test-TcpPort {
     }
     finally {
         $client.Dispose()
+    }
+}
+
+function Get-ListeningProcess {
+    param([int]$Port)
+    try {
+        $connection = Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction Stop |
+            Select-Object -First 1
+        return Get-Process -Id $connection.OwningProcess -ErrorAction Stop
+    }
+    catch {
+        return $null
     }
 }
 
@@ -132,7 +149,15 @@ if (Test-Path $stateFile) {
 
 Write-Host "[3/4] Starting the TaxPal bot..." -ForegroundColor Cyan
 if (Test-TcpPort -Port 3978) {
+    $existingBot = Get-ListeningProcess -Port 3978
+    if ($existingBot -and $existingBot.ProcessName -notmatch '^python') {
+        throw "Port 3978 is occupied by $($existingBot.ProcessName) (PID $($existingBot.Id)), not the TaxPal Python bot."
+    }
     Write-Host "      Bot is already listening on port 3978."
+    if ($existingBot) {
+        $state.BotPid = $existingBot.Id
+        Save-LauncherState -State $state
+    }
 }
 else {
     $env:TAXPAL_ENV = "development"
@@ -149,20 +174,34 @@ else {
         -RedirectStandardOutput (Join-Path $runtimeDir "bot.log") `
         -RedirectStandardError (Join-Path $runtimeDir "bot-error.log") `
         -PassThru
-    Wait-ForPort -Port 3978 -TimeoutSeconds 45 -Process $bot -Name "TaxPal bot"
     $state.BotPid = $bot.Id
+    Save-LauncherState -State $state
+    Write-Host "      Waiting for the bot to finish loading (first startup can take about two minutes)..."
+    Wait-ForPort -Port 3978 -TimeoutSeconds 120 -Process $bot -Name "TaxPal bot"
 }
 
 Write-Host "[4/4] Starting Microsoft 365 Agents Playground..." -ForegroundColor Cyan
 if (Test-TcpPort -Port 56150) {
+    $existingPlayground = Get-ListeningProcess -Port 56150
+    if ($existingPlayground -and $existingPlayground.ProcessName -notmatch '^node') {
+        throw "Port 56150 is occupied by $($existingPlayground.ProcessName) (PID $($existingPlayground.Id)), not Agents Playground."
+    }
     Write-Host "      Playground is already listening on port 56150."
+    if ($existingPlayground) {
+        $state.PlaygroundPid = $existingPlayground.Id
+        Save-LauncherState -State $state
+    }
 }
 else {
     $node = (Get-Command node.exe -ErrorAction Stop).Source
+    # Start-Process joins ArgumentList items into one command line. Quote the
+    # CLI path explicitly because this project is commonly stored below a
+    # directory such as "Tax Assistant".
+    $quotedPlaygroundCli = '"' + $playgroundCli + '"'
     $playground = Start-Process `
         -FilePath $node `
         -ArgumentList @(
-            $playgroundCli,
+            $quotedPlaygroundCli,
             "start",
             "--app-endpoint", "http://127.0.0.1:3978/api/messages",
             "--channel-id", "msteams",
@@ -175,9 +214,10 @@ else {
         -PassThru
     Wait-ForPort -Port 56150 -TimeoutSeconds 45 -Process $playground -Name "Agents Playground"
     $state.PlaygroundPid = $playground.Id
+    Save-LauncherState -State $state
 }
 
-$state | ConvertTo-Json | Set-Content -Path $stateFile -Encoding UTF8
+Save-LauncherState -State $state
 
 Write-Host ""
 Write-Host "TaxPal Playground is ready: http://127.0.0.1:56150" -ForegroundColor Green

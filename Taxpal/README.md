@@ -432,6 +432,8 @@ On Windows, double-click `start-taxpal-playground.cmd` in the `Taxpal` folder. T
 - starts Microsoft 365 Agents Playground on port `56150`; and
 - opens `http://localhost:56150` in the default browser.
 
+The launcher supports project paths containing spaces, records the exact bot and Playground processes it starts, and allows up to two minutes for the Python bot to load on a cold start.
+
 Keep the terminal window open while the launcher performs its checks. When you finish, double-click `stop-taxpal-playground.cmd`. This stops the bot and Playground processes started by the launcher; the Docker services remain running so the next launch is faster.
 
 If a launch fails, inspect the text files in `Taxpal/.runtime`. They contain separate bot and Playground output and error logs. The generated `.runtime` folder is ignored by Git.

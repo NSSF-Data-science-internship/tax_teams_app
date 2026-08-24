@@ -4,9 +4,16 @@ $stateFile = Join-Path $projectRoot ".runtime\playground-processes.json"
 
 function Stop-ProcessTree {
     param([int]$ProcessId)
-    $children = Get-CimInstance Win32_Process -Filter "ParentProcessId=$ProcessId" -ErrorAction SilentlyContinue
-    foreach ($child in $children) {
-        Stop-ProcessTree -ProcessId $child.ProcessId
+    try {
+        $children = Get-CimInstance Win32_Process -Filter "ParentProcessId=$ProcessId" -ErrorAction Stop
+        foreach ($child in $children) {
+            Stop-ProcessTree -ProcessId $child.ProcessId
+        }
+    }
+    catch {
+        # Some managed Windows environments block CIM queries. The bot and
+        # Playground are direct launcher children, so stopping the recorded
+        # process still gives a reliable fallback.
     }
     Stop-Process -Id $ProcessId -Force -ErrorAction SilentlyContinue
 }
