@@ -4,7 +4,6 @@ microsoft-teams-apps>=2.0.0a8,<3.0.0
 #microsoft.teams.ai>=2.0.0a8,<3.0.0
 #microsoft.teams.openai>=2.0.0a8,<3.0.0
 httpx>=0.27.0
-qdrant-client>=1.10.0
 requests
 beautifulsoup4
 lxml

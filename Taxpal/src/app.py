@@ -1,6 +1,9 @@
 import asyncio
 import hashlib
+import logging
 import os
+
+logging.basicConfig(level=logging.INFO)
 
 from microsoft_teams.apps import (
     App,

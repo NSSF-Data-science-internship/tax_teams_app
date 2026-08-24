@@ -14,15 +14,24 @@ HOW TO RUN:
     python scraper.py --ulii    (just ULII)
 """
 
-import os, re, time
+import os, re, sys, time
 from urllib.parse import urljoin, urlparse
+
+if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
 
 import requests
 from bs4 import BeautifulSoup
 from pathlib import Path
 
 # ── Config ────────────────────────────────────────────────
-HEADERS = {"User-Agent": "TaxPalBot/1.0 (Educational tax law research)"}
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                  "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.9",
+}
 DELAY = 2  # seconds between requests — be respectful to servers
 BASE_DIR = Path(__file__).parent.parent / "data" / "raw"
 DEAD_SITES: set[str] = set()
@@ -72,57 +81,73 @@ def _slug(text: str) -> str:
 # ══════════════════════════════════════════════════════════
 
 ULII_ACTS = [
-    ("Income Tax Act, Cap 340",
-     "https://ulii.org/akn/ug/act/1997/11/eng@2023-07-01"),
-    ("Value Added Tax Act, Cap 349",
-     "https://ulii.org/akn/ug/act/1996/8/eng@2023-07-01"),
+    ("Income Tax Act, Cap 338",
+     "https://ulii.org/akn/ug/act/1997/11/eng@2024-12-23"),
+    ("Value Added Tax Act",
+     "https://ulii.org/akn/ug/act/statute/1996/8/eng@2000-12-31"),
     ("Excise Duty Act, 2014",
-     "https://ulii.org/akn/ug/act/2014/11/eng@2023-07-01"),
+     "https://ulii.org/akn/ug/act/2014/11/eng@2023-12-31"),
     ("Tax Procedures Code Act, 2014",
-     "https://ulii.org/akn/ug/act/2014/14/eng@2023-07-01"),
-    ("Stamp Duty Act, Cap 342",
-     "https://ulii.org/akn/ug/act/1915/2/eng@2023-07-01"),
-    ("East African Community Customs Management Act",
-     "https://ulii.org/akn/ug/act/2004/1/eng@2023-07-01"),
-    ("Tax Appeals Tribunal Act, Cap 345",
-     "https://ulii.org/akn/ug/act/1997/12/eng@2023-07-01"),
+     "https://ulii.org/akn/ug/act/2014/14/eng@2023-12-31"),
+    ("Stamp Duty Act, 2014",
+     "https://ulii.org/akn/ug/act/2014/13/eng@2023-12-31"),
+    ("Tax Appeals Tribunals Act, Cap 345",
+     "https://ulii.org/akn/ug/act/1997/12/eng@2023-12-31"),
 ]
 
 
 def scrape_ulii() -> list[dict]:
-    """Download the full text of each Ugandan tax act from ULII."""
+    """Download the full text of each Ugandan tax act from ULII via Firecrawl.
+
+    ULII puts a Cloudflare interactive challenge in front of its /akn/ act
+    pages that plain requests/BeautifulSoup can't get past, so this source
+    goes through the Firecrawl API instead of the shared `requests` session.
+    """
     print("\nScraping ULII — tax statutes...")
     results = []
 
+    api_key = os.environ.get("FIRECRAWL_API_KEY")
+    if not api_key:
+        env_file = Path(__file__).parent.parent / "env" / ".env"
+        if env_file.exists():
+            for line in env_file.read_text(encoding="utf-8").splitlines():
+                if line.startswith("FIRECRAWL_API_KEY="):
+                    api_key = line.split("=", 1)[1].strip()
+                    break
+
+    if not api_key:
+        print("  ⚠ FIRECRAWL_API_KEY not set — skipping ULII.\n")
+        return results
+
+    from firecrawl import Firecrawl
+    fc = Firecrawl(api_key=api_key)
+
     for title, url in ULII_ACTS:
-        if _should_skip_url(url):
-            print(f"  {title}... skipped (dead host)")
-            continue
         try:
             print(f"  {title}...", end=" ", flush=True)
-            r = requests.get(url, headers=HEADERS, timeout=30)
-            if r.status_code in (401, 403, 404):
-                raise requests.HTTPError(f"HTTP {r.status_code}")
-            r.raise_for_status()
-            soup = BeautifulSoup(r.text, "lxml")
+            doc = fc.scrape(url, formats=["markdown"])
+            if doc.metadata.status_code != 200 or not doc.markdown:
+                raise RuntimeError(f"HTTP {doc.metadata.status_code}")
 
-            # ULII puts the act inside <article class="akn-act">
-            body = (soup.select_one("article.akn-act")
-                    or soup.select_one(".akn-akomaNtoso")
-                    or soup.select_one("main")
-                    or soup.body)
+            # Some ULII pages only render chrome around an embedded PDF
+            # viewer — the "/source" endpoint serves that PDF directly and
+            # Firecrawl parses it into markdown for us.
+            markdown, used_url = doc.markdown, url
+            if len(doc.markdown) < 5000:
+                src_url = url.rstrip("/") + "/source"
+                src_doc = fc.scrape(src_url, formats=["markdown"])
+                if src_doc.metadata.status_code == 200 and src_doc.markdown and len(src_doc.markdown) > len(doc.markdown):
+                    markdown, used_url = src_doc.markdown, src_url
 
-            text = str(body) if body else r.text
-            path = _save(text, "ulii", _slug(title) + ".html")
+            path = _save(markdown, "ulii", _slug(title) + ".md")
             results.append({"title": title, "source": "ulii",
-                            "url": url, "path": path, "type": "html"})
-            print(f"({len(text):,} chars)")
+                            "url": used_url, "path": path, "type": "md"})
+            print(f"({len(markdown):,} chars)")
 
         except Exception as e:
-            _mark_dead_site(url, str(e))
             print(f" {e}")
 
-        time.sleep(DELAY)
+        time.sleep(1)
 
     print(f"  {len(results)}/{len(ULII_ACTS)} acts scraped.\n")
     return results
@@ -132,11 +157,17 @@ def scrape_ulii() -> list[dict]:
 # 2. URA — tax guides, rulings, practice notes
 # ══════════════════════════════════════════════════════════
 
-URA_BASE = "https://www.ura.go.ug"
+URA_BASE = "https://ura.go.ug"
 URA_SEEDS = [
-    "/tax-types/", "/tax-types/income-tax/",
-    "/tax-types/value-added-tax/", "/tax-types/excise-duty/",
-    "/publications/public-rulings/", "/publications/practice-notes/",
+    "/en/legal-policy/",
+    "/en/domestic-taxes/",
+    "/en/domestic-taxes/tax-exemption/",
+    "/en/domestic-taxes/tax-exemption/income-tax-exemption/",
+    "/en/domestic-taxes/tax-exemption/withholding-tax/",
+    "/en/domestic-taxes/stamp-duty/",
+    "/en/domestic-taxes/objection-appeals/",
+    "/en/category/legal-policy/double-taxation-agreements/",
+    "/download-category/laws-and-acts/",
 ]
 
 
@@ -202,7 +233,15 @@ def scrape_ura() -> list[dict]:
 # ══════════════════════════════════════════════════════════
 
 MOFPED_BASE = "https://www.finance.go.ug"
-MOFPED_SEEDS = ["/budget-documents/", "/tax-policy/", "/publications/"]
+MOFPED_SEEDS = [
+    "/publications",
+    "/publications/budget-documents",
+    "/publications/laws-regulations",
+    "/publications/policy-briefs",
+    "/publications/policies-guidelines",
+    "/publications/ministry-circulars",
+    "/publications/ministerial-policy-statements",
+]
 
 
 def scrape_mofped() -> list[dict]:

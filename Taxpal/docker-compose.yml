@@ -10,16 +10,6 @@ services:
       - chroma-data:/data
     restart: unless-stopped
 
-  qdrant:
-    image: qdrant/qdrant:latest
-    container_name: taxpal-qdrant
-    ports:
-      - "6333:6333"
-      - "6334:6334"
-    volumes:
-      - qdrant-data:/qdrant/storage
-    restart: unless-stopped
-
   postgres:
     image: pgvector/pgvector:pg16
     container_name: taxpal-postgres
@@ -53,12 +43,9 @@ services:
     environment:
       LANGFLOW_AUTO_LOGIN: "true"
       LANGFLOW_SKIP_AUTH_AUTO_LOGIN: "true"
-      LANGFLOW_SSRF_ALLOWED_HOSTS: "qdrant,localhost,127.0.0.1,langflow,huggingface.co,router.huggingface.co"
+      LANGFLOW_SSRF_ALLOWED_HOSTS: "localhost,127.0.0.1,langflow,huggingface.co,router.huggingface.co"
     volumes:
       - langflow-data:/app/langflow
-    depends_on:
-      qdrant:
-        condition: service_started
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:7860/health', timeout=5)"]
       interval: 15s
@@ -89,8 +76,6 @@ services:
       LANGFLOW_BASE_URL: "http://langflow:7860"
       LANGFLOW_FLOW_ID: "e4e1e9c0-6ba7-4b90-8f30-41bb4643543d"
       LANGFLOW_API_KEY: ""
-      QDRANT_URL: "http://qdrant:6333"
-      QDRANT_COLLECTION: "uganda_tax_law_v2"
     depends_on:
       postgres:
         condition: service_healthy
@@ -100,8 +85,6 @@ services:
         condition: service_started
       langflow:
         condition: service_healthy
-      qdrant:
-        condition: service_started
     restart: unless-stopped
 
   graph-search:
@@ -162,6 +145,5 @@ services:
 volumes:
   chroma-data:
   langflow-data:
-  qdrant-data:
   postgres-data:
   huggingface-cache:
