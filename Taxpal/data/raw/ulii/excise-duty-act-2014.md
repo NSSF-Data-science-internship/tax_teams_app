@@ -4,12 +4,12 @@
 
 Legislation as at 31 December 2023
 
-Note: This is not the latest available version of this Act. <u>View it online</u>.
+Note: This is not the latest available version of this Act. View it online.
 
 There may have been updates since this file was created.
 PDF created on 12 August 2026 at 10:59.
 
-*Collection last checked for updates: 24 October 2014*.
+_Collection last checked for updates: 24 October 2014_.
 
 View online
 
@@ -22,48 +22,49 @@ gazette of each piece of legislation (including amendments) is available for ref
 This is a free download from the ULII website and is presented in collaboration with the Laws.Africa Legislation
 Collection, a collection of African legislation that is digitised by Laws.Africa and made available for free.
 
-www.ulii.org | <u>info@ulii.org</u>
+[www.ulii.org](http://www.ulii.org/) \| [info@ulii.org](mailto:info@ulii.org)
 
-www.laws.africa | <u>info@laws.africa</u>
+[www.laws.africa](http://www.laws.africa/) \| [info@laws.africa](mailto:info@laws.africa)
 
 FRBR URI: /akn/ug/act/2014/11/eng@2023-12-31
 
 This PDF is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License (CC
 BY-NC-SA 4.0).
 
----
+* * *
 
 ## Excise Duty Act (Chapter 336) Contents
 
 Part I – Preliminary ............................................................................................................................................................................................ 1
-1. Interpretation ............................................................................................................................................................................................. 1
-2. Associate ...................................................................................................................................................................................................... 3
-Part II – Imposition, liability and payment of excise duty .................................................................................................................. 4
-3. Imposition of excise duty ..................................................................................................................................................................... 4
-Part III – Registration of manufacturers, importers and providers of excisable goods and services ..................................... 4
-4. Registration of manufacturers, importers and providers of excisable goods and services ............................................ 4
-Part IV – Control of excisable goods ........................................................................................................................................................... 5
-5. Provision of facilities for excise control .......................................................................................................................................... 5
-6. Entry .............................................................................................................................................................................................................. 5
-7. Storage of excisable goods after manufacture .............................................................................................................................. 6
-8. Deficiency or excess in stock .............................................................................................................................................................. 6
-Part V – Payment of excise duty, returns, assessments and appeals ............................................................................................... 7
-9. Payment of excise duty ......................................................................................................................................................................... 7
+
+01. Interpretation ............................................................................................................................................................................................. 1
+02. Associate ...................................................................................................................................................................................................... 3
+    Part II – Imposition, liability and payment of excise duty .................................................................................................................. 4
+03. Imposition of excise duty ..................................................................................................................................................................... 4
+    Part III – Registration of manufacturers, importers and providers of excisable goods and services ..................................... 4
+04. Registration of manufacturers, importers and providers of excisable goods and services ............................................ 4
+    Part IV – Control of excisable goods ........................................................................................................................................................... 5
+05. Provision of facilities for excise control .......................................................................................................................................... 5
+06. Entry .............................................................................................................................................................................................................. 5
+07. Storage of excisable goods after manufacture .............................................................................................................................. 6
+08. Deficiency or excess in stock .............................................................................................................................................................. 6
+    Part V – Payment of excise duty, returns, assessments and appeals ............................................................................................... 7
+09. Payment of excise duty ......................................................................................................................................................................... 7
 10. Application of information technology ......................................................................................................................................... 7
 11. Refunds ...................................................................................................................................................................................................... 7
 12. Liability to duty on re-importation ................................................................................................................................................. 8
 13. Excisable goods or excisable services granted remission liable to duty on disposal ................................................... 8
-Part VI – Miscellaneous .................................................................................................................................................................................... 8
+    Part VI – Miscellaneous .................................................................................................................................................................................... 8
 14. Prices quoted to include excise duty ............................................................................................................................................. 8
 15. General penalty ...................................................................................................................................................................................... 9
 16. Regulations ............................................................................................................................................................................................... 9
 17. Power to amend Schedule 1 ........................................................................................................................................................... 10
 18. Repeal and savings ............................................................................................................................................................................ 10
-Schedule 1 (Sections 1, 17) ........................................................................................................................................................................... 10
-Schedule 2 (Sections 1, 3(1)) ........................................................................................................................................................................ 10
-Schedule 3 (Section 1) .................................................................................................................................................................................... 17
+    Schedule 1 (Sections 1, 17) ........................................................................................................................................................................... 10
+    Schedule 2 (Sections 1, 3(1)) ........................................................................................................................................................................ 10
+    Schedule 3 (Section 1) .................................................................................................................................................................................... 17
 
----
+* * *
 
 # Uganda
 
@@ -75,27 +76,23 @@ Schedule 3 (Section 1) .........................................................
 
 **Commenced on 1 July 2014**
 
-*[This is the version of this document as it was at 31 December 2023 to 30 June 2025.]*
+_\[This is the version of this document as it was at 31 December 2023 to 30 June 2025.\]_
 
-*[Note: This legislation was revised and consolidated as at 31 December 2000 and 31 December 2023 by the Law Reform*
-*Commission of Uganda. All subsequent amendments have been researched and applied by Laws.Africa for ULII.]*
+_\[Note: This legislation was revised and consolidated as at 31 December 2000 and 31 December 2023 by the Law Reform_ _Commission of Uganda. All subsequent amendments have been researched and applied by Laws.Africa for ULII.\]_
 
-*[Amended by* <u>Excise Duty (Amendment) Act, 2020 (Act 21 of 2020)</u> *on 27 November 2020]*
-*[Amended by* <u>Law Revision (Miscellaneous Amendments) Act, 2023 (Act 17 of 2023)</u> *on 28 July 2023]*
-*[Amended by* <u>Excise Duty (Amendment) (No. 2) Act, 2023 (Act 24 of 2023)</u> *on 25 August 2023]*
+_\[Amended by_ Excise Duty (Amendment) Act, 2020 (Act 21 of 2020) _on 27 November 2020\]_ _\[Amended by_ Law Revision (Miscellaneous Amendments) Act, 2023 (Act 17 of 2023) _on 28 July 2023\]_ _\[Amended by_ Excise Duty (Amendment) (No. 2) Act, 2023 (Act 24 of 2023) _on 25 August 2023\]_
 
 **An Act to provide for excise duty and related matters.**
 
-*[Act 11/2014; Act 7/2015; Act 12/2016; Act 11/2017; Act 9/2018; Act 12/2018; Act 12/2019; Act 21/2020; Act 6/2021;*
-*Act 16/2021; Act 17/2023; Act 24/2023]*
+_\[Act 11/2014; Act 7/2015; Act 12/2016; Act 11/2017; Act 9/2018; Act 12/2018; Act 12/2019; Act 21/2020; Act 6/2021;_ _Act 16/2021; Act 17/2023; Act 24/2023\]_
 
 ## Part I – Preliminary
 
-## 1. Interpretation
+## 1\. Interpretation
 
 In this Act, unless the context otherwise requires—
 
-“**aircraft**” includes every description of craft used in aerial navigation; “assessment” means—
+“ **aircraft**” includes every description of craft used in aerial navigation; “assessment” means—
 
 (a) the ascertainment of excise duty under this Act;
 
@@ -104,9 +101,9 @@ Act; or
 
 (c) a decision of the Commissioner which, under this Act, is subject to objection and appeal;
 
-“**Authority**” means the Uganda Revenue Authority established by the Uganda Revenue Authority Act;
+“ **Authority**” means the Uganda Revenue Authority established by the Uganda Revenue Authority Act;
 
-“**beer**” includes ale, porter, and any other description of beer and any liquor which is made or sold as a
+“ **beer**” includes ale, porter, and any other description of beer and any liquor which is made or sold as a
 description of, or substitute for, beer and which contains more than two percent of proof spirit but does
 not include—
 
@@ -114,11 +111,11 @@ not include—
 
 (b) any kind of beer prescribed by regulations;
 
-“**cigar**” means a cigar, cheroot, or cigarillo prepared from tobacco;
+“ **cigar**” means a cigar, cheroot, or cigarillo prepared from tobacco;
 
-“**cigarette**” means a cigarette prepared from tobacco and includes any form of tip and the paper;
+“ **cigarette**” means a cigarette prepared from tobacco and includes any form of tip and the paper;
 
-“**citizen**” means—
+“ **citizen**” means—
 
 (a) a natural person who is a citizen of a Partner State of the East African Community; or
 
@@ -126,117 +123,117 @@ not include—
 Community in which at least fifty-one percent of the shares are held by a person who is a citizen of
 a Partner State of the East African Community;
 
----
+* * *
 
-“**Commissioner**” means the Commissioner General appointed under the Uganda Revenue Authority Act;
+“ **Commissioner**” means the Commissioner General appointed under the Uganda Revenue Authority Act;
 
-“**currency point**” has the value assigned to it in Schedule 1 to this Act;
+“ **currency point**” has the value assigned to it in Schedule 1 to this Act;
 
-“**distiller**” means a manufacturer of spirits by distillation of a fermented liquor or enguli or by any other
+“ **distiller**” means a manufacturer of spirits by distillation of a fermented liquor or enguli or by any other
 process;
 
-“**distillery**” means a distiller’s factory;
+“ **distillery**” means a distiller’s factory;
 
-“**distiller’s warehouse**” means a place of security provided by a distiller and approved by the
+“ **distiller’s warehouse**” means a place of security provided by a distiller and approved by the
 Commissioner under this Act;
 
-“**document**” includes magnetic tapes, disks and microfilms;
+“ **document**” includes magnetic tapes, disks and microfilms;
 
-“**enguli**” means a spirituous liquor including a drink containing liquor, which is conveyed into a receiver
+“ **enguli**” means a spirituous liquor including a drink containing liquor, which is conveyed into a receiver
 in a distillery entered under this Act as an enguli receiver;
 
-“**excisable goods**” means goods manufactured in Uganda and imported into Uganda and specified in
+“ **excisable goods**” means goods manufactured in Uganda and imported into Uganda and specified in
 Schedule 2 to this Act but does include goods exempt from duty;
 
-“**excisable services**” means the services specified in Schedule 2 to this Act;
+“ **excisable services**” means the services specified in Schedule 2 to this Act;
 
-“**excise duty**” means a duty imposed under this Act;
+“ **excise duty**” means a duty imposed under this Act;
 
-“**export**” means to take or cause to be taken out of Uganda;
+“ **export**” means to take or cause to be taken out of Uganda;
 
-“**goods exempt from duty**” means the goods specified in Schedule 3 to this Act;
+“ **goods exempt from duty**” means the goods specified in Schedule 3 to this Act;
 
-“**import**”, as used in relation to goods, has the meaning assigned to it in the Value Added Tax Act;
+“ **import**”, as used in relation to goods, has the meaning assigned to it in the Value Added Tax Act;
 
-“**importer**”, as used in relation to goods, has the meaning assigned to it in the Value Added Tax Act;
+“ **importer**”, as used in relation to goods, has the meaning assigned to it in the Value Added Tax Act;
 
-“**manufacture**” includes the production of excisable goods or any intermediate or uncompleted process in
+“ **manufacture**” includes the production of excisable goods or any intermediate or uncompleted process in
 the production of excisable goods or the rectifying or denaturing of spirits;
 
-“**materials**” means the goods from which excisable goods are capable of being manufactured and any
+“ **materials**” means the goods from which excisable goods are capable of being manufactured and any
 residue from the process of manufacture;
 
-“**officer**” includes a person, other than a labourer, employed in the service of the Authority and whose
+“ **officer**” includes a person, other than a labourer, employed in the service of the Authority and whose
 right or duty it is to require the performance of any act in this Act;
 
-“**over-the-top services**” means the transmission or receipt of voice or messages over the internet protocol
+“ **over-the-top services**” means the transmission or receipt of voice or messages over the internet protocol
 network and includes access to virtual private networks;
 
-“**own use**”, in relation to services, means applying the services for non-business use;
+“ **own use**”, in relation to services, means applying the services for non-business use;
 
-“**owner**” in respect of any excisable goods, materials, aircraft, vessel, vehicle, plant, or other thing,
+“ **owner**” in respect of any excisable goods, materials, aircraft, vessel, vehicle, plant, or other thing,
 includes a person who is or holds himself or herself out to be the owner, manufacturer, agent or the person
 in possession of, or beneficially interested in, or having control of, or power of disposition over, such
 goods, materials, aircraft, vessel, vehicle, plant, or other thing;
 
-“**plant**” includes utensils, presses, machinery, mills, implements, appliances and fittings;
+“ **plant**” includes utensils, presses, machinery, mills, implements, appliances and fittings;
 
-“**premises**” includes a building, house, room or place;
+“ **premises**” includes a building, house, room or place;
 
-“**registered person**” means a person registered to manufacture excisable goods, import excisable goods or
+“ **registered person**” means a person registered to manufacture excisable goods, import excisable goods or
 to provide excisable services under this Act;
 
-“**rectifier**” means a person who re-distills spirits removed from a spirits receiver for the purpose of
-purifying or adding flavour but does not include the re-distillation of *enguli*
+“ **rectifier**” means a person who re-distills spirits removed from a spirits receiver for the purpose of
+purifying or adding flavour but does not include the re-distillation of _enguli_
 
-“**return**” means a return of excise duty;
+“ **return**” means a return of excise duty;
 
-“**specially denatured spirits**” means spirits denatured in accordance with a formula prescribed by
+“ **specially denatured spirits**” means spirits denatured in accordance with a formula prescribed by
 regulations made under this Act for specially denatured spirits;
 
----
+* * *
 
-“**spirits**” means spirits of any description and includes all liquor mixed with spirits and all mixtures and
-compounds or preparations made with spirits but does not include denatured spirits or *engulv*, “sugar”
+“ **spirits**” means spirits of any description and includes all liquor mixed with spirits and all mixtures and
+compounds or preparations made with spirits but does not include denatured spirits or _engulv_, “sugar”
 includes a saccharine substance, extract, or syrup, rice, flaked maize or any other description of com which
 in the opinion of the Commissioner is prepared in a manner similar to flaked maize and any other material
 capable of being used in brewing except malt, com, hops, hop concentrate or hop oil;
 
-“**supply**” as used in relation to services, has the meaning assigned to it in the Value Added Tax Act;
+“ **supply**” as used in relation to services, has the meaning assigned to it in the Value Added Tax Act;
 
-“**telecommunications services**” means a service for the transmission, emission, or reception of signals,
+“ **telecommunications services**” means a service for the transmission, emission, or reception of signals,
 writing, images, sounds, or information of any kind by wire, radio, optical, or other electromagnetic
 systems and includes the related transfer or assignment of the right to use capacity for such transmission,
 emission, or reception, the provision of access to global or local information networks, but does not
 exclude a private network for the exclusive use of the person;
 
-“ Tribunal ” means the Tax Appeals Tribunal established by the Tax Appeals Tribunals Act https://resolver.laws.africa/resolve/akn/ug/act/1997/12 https://resolver.laws.africa/resolve/akn/ug/act/1997/12 ;
+“ Tribunal ” means the Tax Appeals Tribunal established by the Tax Appeals Tribunals Act [https://resolver.laws.africa/resolve/akn/ug/act/1997/12](https://resolver.laws.africa/resolve/akn/ug/act/1997/12) [https://resolver.laws.africa/resolve/akn/ug/act/1997/12](https://resolver.laws.africa/resolve/akn/ug/act/1997/12) ;
 
-“**Tribunal**” means the Tax Appeals Tribunal established by <u>the Tax Appeals Tribunals Act</u>;
+“ **Tribunal**” means the Tax Appeals Tribunal established by the Tax Appeals Tribunals Act;
 
-“**value added services**” means content, products or services offered in the telecom sector via the mobile
+“ **value added services**” means content, products or services offered in the telecom sector via the mobile
 platform and includes short messaging service and multimedia messaging service which afford the user
 flexibility in accessing other services including mobile betting, games, paying for services, products or
 promotions but does not include standard voice calls, peer to peer short messaging service and multimedia
 messaging service, fax transmission, internet, mobile money transactions and games promoted by a value
 added service provider licensed by the National Lotteries and Gaming Regulatory Board;
 
-“**value added tax**” means value added tax imposed under the Value Added Tax Act;
+“ **value added tax**” means value added tax imposed under the Value Added Tax Act;
 
-“**wash**” means the fermented liquor from which spirits are produced by distillation;
+“ **wash**” means the fermented liquor from which spirits are produced by distillation;
 
-“**wine**” means liquor of a strength not exceeding fifty degrees of proof which is made from fruit and
+“ **wine**” means liquor of a strength not exceeding fifty degrees of proof which is made from fruit and
 sugar and which fruit or sugar is mixed with any other material and which had undergone a process of
 fermentation in its manufacture and includes mead.
 
-## 2. Associate
+## 2\. Associate
 
 (1) For the purposes of this Act, where a person who is not an employee acts in accordance with the
 directions, requests, suggestions or wishes of another person whether or not they are in a business
 relationship and whether those directions, requests, suggestions or wishes are communicated to
 the first-mentioned person, both persons are treated as associates of each other.
 
-(2) Without limiting the general effect of subsection <u>(1)</u>, the following are treated as an associate of a
+(2) Without limiting the general effect of subsection (1), the following are treated as an associate of a
 person—
 
 (a) a relative of the person, unless the Commissioner is satisfied that neither person acts in
@@ -260,7 +257,7 @@ either directly or through one or more interposed companies, partnerships or tru
 with an associate or associates under another application of this section, controls fifty
 percent or more of the rights to income or capital of the partnership;
 
----
+* * *
 
 (g) where the person is the trustee of a trust, any other person who benefits or may benefit
 under the trust; or
@@ -279,7 +276,7 @@ directly or through one or more interposed companies, partnerships or trusts.
 
 ## Part II – Imposition, liability and payment of excise duty
 
-## 3. Imposition of excise duty
+## 3\. Imposition of excise duty
 
 (1) Subject to this Act, the excisable goods and excisable services specified in Schedule 2 to this Act
 shall be chargeable with the excise duty specified in that Schedule.
@@ -313,18 +310,18 @@ liable to account for and pay excise duty on the access to the over-the-top serv
 
 ## Part III – Registration of manufacturers, importers and providers of excisable goods and services
 
-## 4. Registration of manufacturers, importers and providers of excisable goods and services
+## 4\. Registration of manufacturers, importers and providers of excisable goods and services
 
 (1) For the purpose of facilitating the administration of excise duty, a manufacturer, importer or
 provider of excisable goods or excisable services other than retailers shall apply for registration and
 the registration of the premises in which the manufacture, provision or dealing in excisable goods
 or excisable services, other than premises where retailing takes place.
 
----
+* * *
 
-(2) The application under subsection <u>(1)</u> shall be in a form prescribed by the Commissioner.
+(2) The application under subsection (1) shall be in a form prescribed by the Commissioner.
 
-(3) The Commissioner may, within one month after receiving the application under subsection <u>(1)</u>,
+(3) The Commissioner may, within one month after receiving the application under subsection (1),
 register or refuse to register a manufacturer, importer or provider of excisable goods or excisable
 services or the premises in which the manufacture, provision or dealing in excisable goods or
 excisable services takes place.
@@ -335,7 +332,7 @@ applicant or the premises.
 (5) The Commissioner may issue a certificate of registration, with or without conditions.
 
 (6) Where the Commissioner refuses to register the applicant or the premises, the Commissioner shall
-give reasons in writing for the refusal within one month referred to in subsection <u>(3)</u>.
+give reasons in writing for the refusal within one month referred to in subsection (3).
 
 (7) Where the Commissioner registers a manufacturer, importer or provider of excisable goods and
 services or premises under this section, the Commissioner shall, issue to the applicant a certificate
@@ -358,12 +355,12 @@ commences the manufacture, provision or dealing in excisable goods or excisable 
 
 ## Part IV – Control of excisable goods
 
-## 5. Provision of facilities for excise control
+## 5\. Provision of facilities for excise control
 
 (1) The Commissioner may, for the purpose of ensuring compliance with this Act, require an officer to
 be stationed on the registered premises of a registered person under this Act.
 
-(2) The Commissioner may, for the purposes of subsection <u>(1)</u>, require the registered person to
+(2) The Commissioner may, for the purposes of subsection (1), require the registered person to
 provide and maintain, to the satisfaction of the Commissioner, suitable office accommodation and
 equipment in the registered premises.
 
@@ -372,18 +369,18 @@ scales and weights, lights, ladders and other equipment, as may be necessary to 
 to take account of, or check by weight, gauge, or measure, all excisable goods or materials in the
 registered premises.
 
-## 6. Entry
+## 6\. Entry
 
 (1) A registered person shall, before commencing manufacture of excisable goods, make entry in the
 prescribed manner of each building, room, place, and item of plant in the registered premises,
 which the registered person proposes to use in the manufacture, preparation for sale, or storage, of
 materials or excisable goods.
 
-(2) An entry under subsection <u>(1)</u> shall specify the purpose for which a building, room, place or item of
+(2) An entry under subsection (1) shall specify the purpose for which a building, room, place or item of
 plant, is to be used and, unless the Commissioner otherwise permits, the mark by which it is to be
 distinguished.
 
----
+* * *
 
 (3) The Commissioner may, by notice in writing to the registered person, require a new entry to be
 made by the registered person within one month of the date of the notice.
@@ -400,14 +397,14 @@ which it was entered; or
 (c) effect, without the prior permission of the Commissioner, an alteration to any building,
 room, place or item of plant.
 
-(5) A registered person who contravenes subsection <u>(4)</u> commits an offence and is liable, on conviction,
+(5) A registered person who contravenes subsection (4) commits an offence and is liable, on conviction,
 to a fine not exceeding seventy-two currency points or to imprisonment for a term not exceeding
 three years, or both.
 
-(6) Where a person is convicted under subsection <u>(5)</u>, the court shall order the forfeiture of any
+(6) Where a person is convicted under subsection (5), the court shall order the forfeiture of any
 excisable goods, materials or plant in respect of which the offence has been committed.
 
-## 7. Storage of excisable goods after manufacture
+## 7\. Storage of excisable goods after manufacture
 
 (1) All manufactured excisable goods shall, after the process of manufacture has been completed, be
 immediately removed to a room to be known as the “stock room”.
@@ -429,7 +426,7 @@ Commissioner.
 
 (7) The Commissioner may take copies of any entry in the stock book.
 
-## 8. Deficiency or excess in stock
+## 8\. Deficiency or excess in stock
 
 (1) Where, upon the Commissioner taking stock of the manufactured excisable goods in the registered
 premises of a registered person—
@@ -446,7 +443,7 @@ the registered person must be in the stock room, those goods shall be forfeited 
 (a) who fails to account to the Commissioner for any excisable goods manufactured by the
 registered person; or
 
----
+* * *
 
 (b) in whose registered premises excisable goods are found in excess of the quantity which,
 according to the stock book, should be in the registered premises,
@@ -458,7 +455,7 @@ both.
 
 ## Part V – Payment of excise duty, returns, assessments and appeals
 
-## 9. Payment of excise duty
+## 9\. Payment of excise duty
 
 (1) A person liable to pay excise duty shall pay the duty on the date the person files a return with the
 Commissioner, or shall, in the case of an assessment, pay the excise duty within forty-five days after
@@ -484,19 +481,19 @@ duty chargeable on those goods.
 (c) is manufactured from recycled plastics, remit or refund the excise duty paid under this Act.
 
 (6) The Commissioner shall not remit the excise duty paid on a plastic product manufactured from
-recycled plastic referred to in subsection <u>(5)(c)</u>, unless the recycled plastic used in the manufacture
+recycled plastic referred to in subsection (5)(c), unless the recycled plastic used in the manufacture
 of the plastic product is equivalent to at least twenty percent of the raw material used.
 
 (7) In this section, “approved healthcare or medical product” means a product that has been approved
 by the Minister responsible for finance in consultation with the Minister responsible for health, in
-accordance with Regulations made under section <u>16</u>.
+accordance with Regulations made under section 16.
 
-## 10. Application of information technology
+## 10\. Application of information technology
 
 Subject to conditions, the Commissioner may prescribe the formalities or procedures under this Act which
 may be carried out by use of information technology.
 
-## 11. Refunds
+## 11\. Refunds
 
 (1) A person liable to pay excise duty may apply to the Commissioner for a refund of any excise duty
 paid in error or in excess of the excise duty assessed or due.
@@ -509,7 +506,7 @@ manner prescribed by the Commissioner.
 (a) apply the excess in reduction of any other duty due from the person liable to pay excise duty;
 or
 
----
+* * *
 
 (b) at the written option of the person liable to pay excise duty, apply the balance of the excess,
 if any, in reduction of any outstanding liability of the person liable to pay excise duty in
@@ -522,7 +519,7 @@ the Commissioner shall pay simple interest on the amount of the refund at the ra
 per month commencing thirty days after the date of the application for the refund and ending on
 the last day on which a refund is made.
 
-(6) Notwithstanding subsection <u>(4)</u>, a person liable to excise duty who causes delay in determining a
+(6) Notwithstanding subsection (4), a person liable to excise duty who causes delay in determining a
 correct refund payable to him or her, and leading to a belated refund process, is only entitled to
 interest with effect from sixty days from the date on which the person filed the delayed return,
 lodged an application with the Tribunal or the High Court, or submitted to the Commissioner all
@@ -530,19 +527,19 @@ necessary and satisfactory information required in relation to the refund in que
 the later.
 
 (7) The Commissioner shall, within thirty days after making a decision on a refund application under
-subsection <u>(1)</u>, serve on the person applying for the refund a notice in writing of the decision.
+subsection (1), serve on the person applying for the refund a notice in writing of the decision.
 
-(8) A person dissatisfied with a decision referred to in subsection <u>(7)</u> may challenge the decision under
+(8) A person dissatisfied with a decision referred to in subsection (7) may challenge the decision under
 the objection and appeal procedure in this Act.
 
-## 12. Liability to duty on re-importation
+## 12\. Liability to duty on re-importation
 
 Where a remission or refund of excise duty has been granted in respect of excisable goods or excisable
 services which have been exported and those excisable goods or excisable services are subsequently
 unloaded in Uganda for home consumption, those excisable goods or excisable services are liable to excise
 duty in force at the time of the unloading.
 
-## 13. Excisable goods or excisable services granted remission liable to duty on disposal
+## 13\. Excisable goods or excisable services granted remission liable to duty on disposal
 
 (1) Subject to this Act, a person who has been granted a remission or refund in respect of excisable
 goods or excisable services or is in possession of excisable goods for which a remission or refund
@@ -553,25 +550,25 @@ services in a manner inconsistent with the purpose for which the remission or re
 with the purpose for which the remission or refund was granted, is liable to pay the excise duty
 which would have been paid if the remission or refund had not been granted.
 
-(3) Where excisable goods to which subsection <u>(1)</u> applies are sold or disposed of without payment of
+(3) Where excisable goods to which subsection (1) applies are sold or disposed of without payment of
 the excise duty to which they are liable, the excisable goods shall be forfeited to the State.
 
 (4) Any person who knowingly disposes of or knowingly acquires excisable goods or knowingly provides
-or knowingly receives excisable services to which subsection <u>(1)</u> applies without the duty on the
+or knowingly receives excisable services to which subsection (1) applies without the duty on the
 goods or services having been paid, commits an offence and is liable, on conviction, to a fine not
 exceeding forty-eight currency points or to imprisonment for a term not exceeding two years, or
 both.
 
 ## Part VI – Miscellaneous
 
-## 14. Prices quoted to include excise duty
+## 14\. Prices quoted to include excise duty
 
 The price advertised or quoted for an excisable good or service shall include excise duty and the
 advertisement or quotation shall state that the price includes excise duty.
 
----
+* * *
 
-## 15. General penalty
+## 15\. General penalty
 
 (1) A person who fails to apply for registration under section 4 is liable to pay a penalty equal to
 the amount of duty payable during the period commencing with the last day of the application
@@ -584,13 +581,13 @@ penalty amounting to whichever is the greater of the following—
 (a) ten currency points; or
 
 (b) an interest charge for the period for which the return is outstanding calculated in accordance
-with subsection <u>(3)</u>.
+with subsection (3).
 
 (3) Any person who fails to pay excise duty imposed under this Act by the due date is liable to pay
 interest on the unpaid duty at a rate of two percent per month, compounded, for the excise duty
 which is outstanding.
 
-(4) Where a person pays interest under subsection <u>(3)</u>, and the duty to which it relates is found not to
+(4) Where a person pays interest under subsection (3), and the duty to which it relates is found not to
 have been due and payable by the person and is refunded, the interest relating to the amount of the
 refund, shall be refunded to that person with an interest of two percent per month, compounded.
 
@@ -612,15 +609,15 @@ on the false or misleading information; or
 (ii) the amount of the refund claimed was false, that person is liable to pay a penalty
 equal to the amount of the excess duty, refund or claim.
 
-(7) Where the interest due and payable under subsection <u>(3)</u> exceeds the aggregate of the principal tax,
+(7) Where the interest due and payable under subsection (3) exceeds the aggregate of the principal tax,
 any interest in excess of the principal tax shall be waived.
 
-## 16. Regulations
+## 16\. Regulations
 
 (1) The Minister may, by statutory instrument, make regulations to better carry into effect the
 provisions of this Act.
 
-(2) Without limiting the general effect of subsection <u>(1)</u>, regulations made under this section may—
+(2) Without limiting the general effect of subsection (1), regulations made under this section may—
 
 (a) provide for the fees to be paid for a certificate of registration issued under this Act;
 
@@ -635,22 +632,22 @@ provisions of this Act.
 (f) regulate the receipt, storage, warehousing, removal and delivery of spirits, prior to the
 payment of excise duty.
 
----
+* * *
 
 (3) Regulations made under this section may provide that a person who contravenes a provision of the
 regulations commits an offence and is liable, on conviction, to a fine not exceeding seventy-two
 currency points, or both.
 
-## 17. Power to amend Schedule 1
+## 17\. Power to amend Schedule 1
 
 The Minister responsible for finance may, by statutory instrument, with the approval of Cabinet, amend
 Schedule 1 to this Act.
 
-## 18. Repeal and savings
+## 18\. Repeal and savings
 
-(1) The East African Excise management Act, 1970 and the Excise Tariff Act, <u>Cap. 338</u> are repealed.
+(1) The East African Excise management Act, 1970 and the Excise Tariff Act, Cap. 338 are repealed.
 
-(2) Notwithstanding subsection <u>(1)</u>—
+(2) Notwithstanding subsection (1)—
 
 (a) all excise duty due in respect of a transaction that took place before the commencement
 of this Act shall be due and payable as if the repealed Act were still in force but in case of a
@@ -683,7 +680,7 @@ A currency point is equivalent to twenty thousand shillings.
 | 1. | ( | (i) | locally manufactured | Ushs. 55,000 per 1000 sticks |
 | 1. | ( | (ii) | imported | Ushs. 75,000 per 1000 sticks |
 
----
+* * *
 
 | No. | Item |  | Excise Duty/ Rateof excise duty |
 | --- | --- | --- | --- |
@@ -704,7 +701,7 @@ A currency point is equivalent to twenty thousand shillings.
 | 3. | (a)Un-denatured spirits made from locally produced raw materials usedin the production of disinfectants and sanitizers for the preventionof the spread of CO VID-19 |  | Nil |
 | 3. | (b)Undenatured spirits made from imported raw materials |  | 100% or Ushs. 2500 per litre,whichever is higher |
 
----
+* * *
 
 | No. | Item |  | Excise Duty/ Rateof excise duty |  |
 | --- | --- | --- | --- | --- |
@@ -725,7 +722,7 @@ A currency point is equivalent to twenty thousand shillings.
 |  |  | (c)Other gas oils | Ushs. 630 per litre |  |
 |  |  | (d)Gas oil for power generation to national grid | Nil |  |
 
----
+* * *
 
 | No. | Item |  | Excise Duty/ Rateof excise duty |
 | --- | --- | --- | --- |
@@ -733,10 +730,10 @@ A currency point is equivalent to twenty thousand shillings.
 |  | (f)Jet Al and aviation fuel |  | Ushs. 630 per litre |
 |  | (g)Jet Al and aviation fuel imported by registered airlines, companieswith designated storage facilities or with contracts to supplyairlinesJet Al and aviation fuel imported by registered airlines,companies with designated storage facilities or with contracts tosupply airlines |  | Nil |
 | 9. | Cane or beet sugar and chemically pur | e sucrose in solid form | Ushs. 100 per kg |
-|  | 10. Cane or beet sugar for industrial use |  | 0% |
+|  | 10\. Cane or beet sugar for industrial use |  | 0% |
 | 11 | . Plastics |  |  |
 | 11 | Plastic products and plastic granules |  | 2.5% or USD 70 per ton,whichever is higher |
-|  | 12. Cosmetics and perfumes except creams used by the albinal in thetreatment of their skin |  | 10% |
+|  | 12\. Cosmetics and perfumes except creams used by the albinal in thetreatment of their skin |  | 10% |
 | 13 | . Telecommunication services |  |  |
 | 13 | (a)Airtime on mobile cellular, landlines and public pay phones |  | 12% of the fee charged |
 | 13 | (b)Internet data, except data for provision of medical services andeducation services |  | 12% of the fee charged |
@@ -745,34 +742,34 @@ A currency point is equivalent to twenty thousand shillings.
 | 13 | (e)Mobile money transactions of withdrawals of cash |  | 0.5% of the value of transaction |
 | 13 | (f)Incoming international calls, except calls from the Republic ofKenya, the Republic of Rwanda and the Republic of South Sudan |  | USD 0.09 per minute |
 
----
+* * *
 
 | No. | Item | Excise Duty/ Rateof excise duty |
 | --- | --- | --- |
-|  | 14. Ledger fees, ATM fees, withdrawal fees, periodic charges and othertransaction and non-transaction charges, excluding loans or theequivalent under Islamic banking related charges, periodically chargedby a financial institution or microfinance deposit-taking institution | 15% of the fees charged |
-|  | 15. Lubricants under HS codes 2710.19.51, 2710.19.52, 3403.19.00 and3403.99.00 including motor vehicle lubricants, but not aircraftlubricants | 15% |
-|  | 16. Sugar confectioneries; chewing gum, sweets and chocolates | Nil |
+|  | 14\. Ledger fees, ATM fees, withdrawal fees, periodic charges and othertransaction and non-transaction charges, excluding loans or theequivalent under Islamic banking related charges, periodically chargedby a financial institution or microfinance deposit-taking institution | 15% of the fees charged |
+|  | 15\. Lubricants under HS codes 2710.19.51, 2710.19.52, 3403.19.00 and3403.99.00 including motor vehicle lubricants, but not aircraftlubricants | 15% |
+|  | 16\. Sugar confectioneries; chewing gum, sweets and chocolates | Nil |
 | 17 | . Furniture |  |
 |  | (a)Specialised hospital furniture | Nil |
 |  | (b)Furniture manufactured in Uganda using local materials butexcluding furniture which is assembled in Uganda | Nil |
 |  | (c)Other furniture | 20% |
 | 18 | . Cooking oil | Ushs. 200 per litre |
-|  | 19. Motorcycles; at first registration | Ushs. 200,000 |
-|  | 20. Construction materials for development of industrial parks or freezones by a developer whose investment is at least USD 50,000,000 inthe case of a foreigner and USD 10,000,000 in the case of a citizen | Nil |
+|  | 19\. Motorcycles; at first registration | Ushs. 200,000 |
+|  | 20\. Construction materials for development of industrial parks or freezones by a developer whose investment is at least USD 50,000,000 inthe case of a foreigner and USD 10,000,000 in the case of a citizen | Nil |
 |  | 21 Construction materials of a factory or warehouse exclusive of thoseavailable on the local market, locally produced raw materials andinputs to an operator within the industrial park, free zone, singlefactory or other business outside the industrial park or free zone whomeets the following requirements— | Nil |
 |  | (a)a minimum investment capital of USD 10,000,000 in the case of aforeigner or USD 3,000,000 in the case of a citizen; or USD 150,000for a citizen whose investment is placed upcountry; | Nil |
 |  | (b)processes agricultural goods; manufactures or assembles medicalappliances, medical sundries or pharmaceuticals, building materials,automobiles, household appliances or manufactures furniture, pulp,paper, printing and publishing of instructional materials; carries onbusiness in logistics and warehousing, information technology orcommercial farming, tyres, footwear, mattresses or toothpaste; |  |
 |  | (c)70% of the raw materials used are sourced locally, subject to theiravailability; |  |
 |  | (d)employs at least 70% of its employees being citizens earning anaggregate wage of at least 70% of the total wage bill; and |  |
 |  | (e)provides for substitution of 30% of the value of imported products. |  |
-|  | 22. Locally produced materials for construction of premises and otherinfrastructure to a hotel or tourism developer whose investmentcapital is at least USD 8,000,000 of a room capacity exceeding onehundred guests. | Nil |
-|  | 23. Furnishings and fittings or locally produced materials for constructionof premises and other infrastructure to a hospital facility developerwhose minimum investment capital is at least USD 5,000,000 and whodevelops a hospital at the level of a national referral hospital withcapacity to provide specialised medical care. | Nil |
-|  | 24. Construction materials for the construction of premises and otherinfrastructure, machinery and equipment or furnishings and fittingsfor technical or vocational institute operators whose investmentcapital is at least USD 10,000,000 in the case of a foreigner or1,000,000 in the case of a citizen. | Nil |
-|  | 25. (a)Any other fermented beverages made from imported cider, perry,mead, spears or near beer; | 60% or shs 950 per litre,whichever is higher |
+|  | 22\. Locally produced materials for construction of premises and otherinfrastructure to a hotel or tourism developer whose investmentcapital is at least USD 8,000,000 of a room capacity exceeding onehundred guests. | Nil |
+|  | 23\. Furnishings and fittings or locally produced materials for constructionof premises and other infrastructure to a hospital facility developerwhose minimum investment capital is at least USD 5,000,000 and whodevelops a hospital at the level of a national referral hospital withcapacity to provide specialised medical care. | Nil |
+|  | 24\. Construction materials for the construction of premises and otherinfrastructure, machinery and equipment or furnishings and fittingsfor technical or vocational institute operators whose investmentcapital is at least USD 10,000,000 in the case of a foreigner or1,000,000 in the case of a citizen. | Nil |
+|  | 25\. (a)Any other fermented beverages made from imported cider, perry,mead, spears or near beer; | 60% or shs 950 per litre,whichever is higher |
 |  | (b)Any other fermented beverages made from locally grown cider,perry, mead, spears or near beer. | 30% or shs 550 per litre,whichever is higher |
-|  | 26. Construction materials of a manufacturer, other than a manufacturerreferred to in item 21, whose investment capital is, at least USD50,000,000 or, in the case of any other manufacturer, who makes anadditional investment equivalent to USD 50,000,000. | Nil |
+|  | 26\. Construction materials of a manufacturer, other than a manufacturerreferred to in item 21, whose investment capital is, at least USD50,000,000 or, in the case of any other manufacturer, who makes anadditional investment equivalent to USD 50,000,000. | Nil |
 
----
+* * *
 
 ## Part II – Calculation of excise duty payable in respect of excisable goods and services whose excise duty is expressed in percentages
 

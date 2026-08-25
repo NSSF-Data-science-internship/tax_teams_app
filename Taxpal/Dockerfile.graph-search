@@ -1,9 +1,11 @@
+# syntax=docker/dockerfile:1
 FROM python:3.12-slim
 
 WORKDIR /app
 
 COPY src/requirements.graph.txt /app/requirements.graph.txt
-RUN pip install --no-cache-dir --timeout 300 --retries 5 -r /app/requirements.graph.txt
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install --timeout 300 --retries 5 -r /app/requirements.graph.txt
 
 COPY src/graph_rag_service.py src/graph_index.py /app/
 

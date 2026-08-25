@@ -4,12 +4,19 @@ Embed TaxPal tax-law chunks with BGE-M3 and store them in Chroma.
 """
 
 import os
+from pathlib import Path
 
+from dotenv import load_dotenv
 from langchain_core.documents import Document
 from langchain_core.embeddings import Embeddings
 from langchain_chroma import Chroma
 
 from FlagEmbedding import BGEM3FlagModel
+
+
+ENV_DIR = Path(__file__).resolve().parent.parent / "env"
+load_dotenv(ENV_DIR / ".env.local", override=False)
+load_dotenv(ENV_DIR / ".env", override=False)
 
 
 # ---------------------------------------------------------

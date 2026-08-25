@@ -7,8 +7,6 @@
 There are outstanding amendments that have not yet been applied. See the History tab for more information.
 
 
-Save
-
 [Download PDF\\
 (1006.4 KB)](https://ulii.org/en/akn/ug/act/statute/1996/8/eng@2000-12-31/source)
 
@@ -27,8 +25,6 @@ Report a problem
 
 Copy citation
 
-
-Save
 
 - Document detail
 

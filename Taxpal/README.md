@@ -66,10 +66,9 @@ When local evidence is missing, scores below the configured threshold, or the us
 | Tax search API | `8001` | Embeds queries and performs similarity search | Required |
 | Teams bot | `3978` | Microsoft Teams interface | Optional interface |
 | Streamlit | `8501` | Local flow-testing dashboard | Optional interface |
-| Langflow | `7860` | Earlier/experimental visual RAG flow | Not currently used |
 | Qdrant | `6333`, `6334` | Earlier/experimental vector store | Not currently used |
 
-`src/app.py` currently imports `tax_search_client` and `llm_client` directly. The older `LangflowClient` integration is retained in the repository but commented out.
+`src/app.py` imports `tax_search_client` and `llm_client` directly.
 
 ## Repository structure
 
@@ -80,7 +79,6 @@ Taxpal/
 │   ├── raw/                    Downloaded HTML and PDF tax sources
 │   └── chunks/all_chunks.json  Parsed chunks ready for embedding
 ├── env/                        Local and Teams Toolkit environment files
-├── flow/                       Retained Langflow flow exports
 ├── infra/                      Azure deployment templates
 ├── src/
 │   ├── app.py                  Microsoft Teams bot
@@ -183,7 +181,7 @@ To start only the services required by the active local RAG flow:
 docker compose up -d chroma postgres tax-search
 ```
 
-To start the complete repository stack, including optional Langflow, Qdrant, and the Teams bot:
+To start the complete repository stack, including the Teams bot:
 
 ```powershell
 docker compose up -d
@@ -591,5 +589,4 @@ cd src
 - The Streamlit dashboard is a local tester, not an authenticated production portal. Add Microsoft Entra ID or another identity provider before exposing it publicly.
 - Trusted web evidence currently depends on Gemini grounding quota and availability.
 - The local Chroma server has no authentication and must not be exposed publicly without network controls and authentication.
-- Langflow and Qdrant remain in Compose as earlier experimental services; the active retrieval path uses FastAPI and Chroma.
 - Several integration scripts perform work during import and should eventually be converted into isolated tests.

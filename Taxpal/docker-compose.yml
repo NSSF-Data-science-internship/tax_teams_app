@@ -30,30 +30,6 @@ services:
       retries: 10
     restart: unless-stopped
 
-  langflow:
-    build:
-      context: .
-      dockerfile: Dockerfile.langflow-local-bge
-    container_name: taxpal-langflow
-    dns:
-      - 1.1.1.1
-      - 8.8.8.8
-    ports:
-      - "7860:7860"
-    environment:
-      LANGFLOW_AUTO_LOGIN: "true"
-      LANGFLOW_SKIP_AUTH_AUTO_LOGIN: "true"
-      LANGFLOW_SSRF_ALLOWED_HOSTS: "localhost,127.0.0.1,langflow,huggingface.co,router.huggingface.co"
-    volumes:
-      - langflow-data:/app/langflow
-    healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:7860/health', timeout=5)"]
-      interval: 15s
-      timeout: 10s
-      retries: 20
-      start_period: 30s
-    restart: unless-stopped
-
   taxpal-bot:
     build:
       context: .
@@ -73,9 +49,6 @@ services:
       GRAPH_RAG_MODE: "auto"
       POSTGRES_HOST: "postgres"
       POSTGRES_PORT: "5432"
-      LANGFLOW_BASE_URL: "http://langflow:7860"
-      LANGFLOW_FLOW_ID: "e4e1e9c0-6ba7-4b90-8f30-41bb4643543d"
-      LANGFLOW_API_KEY: ""
     depends_on:
       postgres:
         condition: service_healthy
@@ -83,8 +56,6 @@ services:
         condition: service_healthy
       graph-search:
         condition: service_started
-      langflow:
-        condition: service_healthy
     restart: unless-stopped
 
   graph-search:
@@ -144,6 +115,5 @@ services:
     restart: unless-stopped
 volumes:
   chroma-data:
-  langflow-data:
   postgres-data:
   huggingface-cache:

@@ -16,7 +16,6 @@ from microsoft_teams.api import (
 )
 
 from config import Config
-#from langflow_client import LangflowClient
 from cards import build_taxpal_card_message
 from conversation import run_conversation_turn
 from tax_search_client import TaxSearchUnavailable
@@ -115,12 +114,6 @@ app = App(
         config.PLAYGROUND_MODE or not config.APP_ID
     ),
 )
-
-
-#langflow_client = LangflowClient(
-    #base_url=config.LANGFLOW_BASE_URL,
-    #flow_id=config.LANGFLOW_FLOW_ID,
-#)
 
 
 @app.on_message
