@@ -4,10 +4,20 @@ import asyncio
 import httpx
 
 
-TAX_SEARCH_URL = os.getenv(
-    "TAX_SEARCH_URL",
-    "http://127.0.0.1:8001"
-)
+def resolve_tax_search_url() -> str:
+    """Resolve a local URL or an internal cloud-service address."""
+    configured_url = os.getenv("TAX_SEARCH_URL", "").strip()
+    if configured_url:
+        if "://" not in configured_url:
+            configured_url = f"http://{configured_url}"
+        return configured_url.rstrip("/")
+
+    host = os.getenv("TAX_SEARCH_HOST", "127.0.0.1").strip()
+    port = os.getenv("TAX_SEARCH_PORT", "8001").strip()
+    return f"http://{host}:{port}"
+
+
+TAX_SEARCH_URL = resolve_tax_search_url()
 TAX_SEARCH_TIMEOUT = float(os.getenv("TAX_SEARCH_TIMEOUT", "120"))
 TAX_SEARCH_RETRIES = int(os.getenv("TAX_SEARCH_RETRIES", "3"))
 
@@ -54,5 +64,5 @@ async def search_tax_law(
     raise TaxSearchUnavailable(
         "The tax-law search service is still starting or temporarily "
         "unavailable. BGE-M3 can take several minutes to load after a "
-        "rebuild. Check http://localhost:8001/health and try again."
+        f"rebuild. Check {TAX_SEARCH_URL}/health and try again."
     ) from last_error

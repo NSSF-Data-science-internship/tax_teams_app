@@ -10,13 +10,10 @@ load_dotenv(ENV_DIR / ".env", override=False)
 
 POSTGRES_HOST = os.getenv("POSTGRES_HOST", "localhost")
 POSTGRES_PORT = os.getenv("POSTGRES_PORT", "15432")
-DATABASE_URL = os.getenv(
-    "CONVERSATION_DATABASE_URL",
-    (
-        "postgresql://taxpal:taxpal_dev_password@"
-        f"{POSTGRES_HOST}:{POSTGRES_PORT}/taxpal"
-    ),
-)
+POSTGRES_DATABASE = os.getenv("POSTGRES_DATABASE", "taxpal")
+POSTGRES_USER = os.getenv("POSTGRES_USER", "taxpal")
+POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "taxpal_dev_password")
+DATABASE_URL = os.getenv("CONVERSATION_DATABASE_URL", "").strip()
 
 SCHEMA_SQL = """
 CREATE SCHEMA IF NOT EXISTS taxpal_conversations;
@@ -58,7 +55,17 @@ CREATE TABLE IF NOT EXISTS taxpal_conversations.user_memory (
 def _connect():
     import psycopg
 
-    return psycopg.connect(DATABASE_URL, connect_timeout=5)
+    if DATABASE_URL:
+        return psycopg.connect(DATABASE_URL, connect_timeout=5)
+    return psycopg.connect(
+        host=POSTGRES_HOST,
+        port=POSTGRES_PORT,
+        dbname=POSTGRES_DATABASE,
+        user=POSTGRES_USER,
+        password=POSTGRES_PASSWORD,
+        connect_timeout=5,
+        sslmode=os.getenv("POSTGRES_SSLMODE", "prefer"),
+    )
 
 
 def ensure_schema() -> None:
