@@ -517,3 +517,5 @@ Section 15 of the Tax Appeals Tribunal Act, insofar as it compels an objector to
 
 
 [▲ To the top](https://ulii.org/en/akn/ug/act/1997/12/eng@2023-12-31#top)
+
+Ask AI

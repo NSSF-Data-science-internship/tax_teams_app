@@ -97,7 +97,6 @@ Open `http://localhost:8501`. Full instructions are in the
 | Teams bot | `3978` | Teams messaging | For Teams only |
 | Streamlit | `8501` | Local chat and diagnostics | For dashboard only |
 | GraphRAG | `8002` | Optional graph retrieval | No |
-| Langflow | `7860` | Retained experiment | No |
 
 ## Repository map
 

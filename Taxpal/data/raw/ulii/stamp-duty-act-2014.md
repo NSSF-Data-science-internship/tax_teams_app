@@ -4,8 +4,6 @@
 
 [Share this document on WhatsApp opens in new tab](https://api.whatsapp.com/send?text=Stamp+Duty+Act+-+https%3A%2F%2Fulii.org%2Fen%2Fakn%2Fug%2Fact%2F2014%2F13%2Feng%402023-12-31) [Share this document on X opens in new tab](https://twitter.com/intent/tweet?text=Stamp+Duty+Act+-+https%3A%2F%2Fulii.org%2Fen%2Fakn%2Fug%2Fact%2F2014%2F13%2Feng%402023-12-31) [Share this document on Facebook opens in new tab](https://www.facebook.com/sharer/sharer.php?u=https://ulii.org/en/akn/ug/act/2014/13/eng@2023-12-31) [Share this document on LinkedIn opens in new tab](https://www.linkedin.com/sharing/share-offsite/?url=https://ulii.org/en/akn/ug/act/2014/13/eng@2023-12-31) [Share this document by email](mailto:?subject=Take%20a%20look%20at%20this%20document%20from%20ULII:%20Stamp%20Duty%20Act&body=https://ulii.org/en/akn/ug/act/2014/13/eng@2023-12-31)
 
-Save
-
 [Download PDF\\
 (982.9 KB)](https://ulii.org/en/akn/ug/act/2014/13/eng@2023-12-31/source)
 
@@ -24,8 +22,6 @@ Report a problem
 
 Copy citation
 
-
-Save
 
 - Document detail
 
@@ -818,3 +814,5 @@ A currency point is equivalent to twenty thousand shillings.
 #### More documents like this one
 
 [▲ To the top](https://ulii.org/en/akn/ug/act/2014/13/eng@2023-12-31#top)
+
+Ask AI
